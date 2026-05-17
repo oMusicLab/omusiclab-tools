@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>oMusic | Virtual Tuner</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="tuner-view-simple">
+    <section id="body-container" class="container-fluid">
+      <div class="text-center margin-bottom">
+        <a href="https://www.omusiclab.com/" aria-label="oMusic Laboratory home">
+          <img
+            src="https://www.omusiclab.com/chord-diagram-generator/styles/img/oMusic%20Laboratory%20Logo.svg"
+            alt="oMusic Laboratory"
+            class="site-logo"
+            width="120"
+            height="120"
+          />
+        </a>
+        <div>oMusic Laboratory</div>
+      </div>
+
+      <h1 class="tool-title text-center">Virtual Tuner</h1>
+      <p class="subtle text-center advanced-only" id="intro-line">
+        Guitar, ukulele, and violin · microphone · equal temperament (A4 = 440 Hz)
+      </p>
+      <p class="subtle text-center simple-only" id="intro-line-simple">Guitar, ukulele, and violin · microphone</p>
+
+      <fieldset class="view-mode-fieldset">
+        <legend class="view-mode-legend">Display</legend>
+        <div class="view-mode-toggle" role="radiogroup" aria-label="Display mode">
+          <label class="view-mode-option">
+            <input type="radio" name="view-mode" value="simple" checked />
+            Simple
+          </label>
+          <label class="view-mode-option">
+            <input type="radio" name="view-mode" value="advanced" />
+            Advanced
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="controls-row">
+        <div class="dropdown">
+          <label for="instrument-select">Instrument</label>
+          <select id="instrument-select" aria-label="Instrument">
+            <option value="guitar">Guitar</option>
+            <option value="ukulele">Ukulele</option>
+            <option value="violin">Violin</option>
+          </select>
+        </div>
+      </div>
+
+      <fieldset class="string-fieldset">
+        <legend>String</legend>
+        <div id="string-options" class="string-grid"></div>
+      </fieldset>
+
+      <div class="tuner-panel" aria-live="polite">
+        <div class="freq-readout advanced-only"><span id="freq-value">—</span><span class="unit">Hz</span></div>
+        <div class="note-readout" id="note-value">—</div>
+        <div class="tuning-plain simple-only" id="tuning-plain">—</div>
+        <div class="cents-line advanced-only" id="cents-value">—</div>
+
+        <div class="meter-wrap">
+          <div class="meter-labels advanced-only">
+            <span>Flat</span>
+            <span>In tune</span>
+            <span>Sharp</span>
+          </div>
+          <div class="meter-track">
+            <div id="meter-needle" class="meter-needle"></div>
+          </div>
+        </div>
+
+        <p class="target-hint" id="target-hint"></p>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="toggle-mic">Start microphone</button>
+      </div>
+
+      <p class="hint">
+        <span id="status-dot" class="status-dot" aria-hidden="true"></span><span id="status-label">Mic off</span>.
+        <span class="advanced-only">
+          Use in a quiet room; pluck or bow near the mic. Needle shows cents vs the selected open string (±50¢ scale).
+        </span>
+        <span class="simple-only">Use in a quiet room; pluck or bow near the mic.</span>
+      </p>
+    </section>
+
+    <footer>
+      <p>
+        Part of <strong>oMusicLab tools</strong> ·
+        <a href="https://www.omusiclab.com/chord-diagram-generator/">Chord Diagram Generator</a>
+      </p>
+    </footer>
+
+    <script src="./tuner.js" defer></script>
+  </body>
+</html>

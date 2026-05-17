@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>oMusic | Virtual Chord Transposer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="transpose-view-simple transpose-simple-keys">
+    <section id="body-container" class="container-fluid">
+      <div class="text-center margin-bottom">
+        <a href="https://www.omusiclab.com/" aria-label="oMusic Laboratory home">
+          <img
+            src="https://www.omusiclab.com/chord-diagram-generator/styles/img/oMusic%20Laboratory%20Logo.svg"
+            alt="oMusic Laboratory"
+            class="site-logo"
+            width="120"
+            height="120"
+          />
+        </a>
+        <div>oMusic Laboratory</div>
+      </div>
+
+      <h1 class="tool-title text-center">Virtual Chord Transposer</h1>
+      <p class="subtle text-center advanced-only">
+        Pick a chord-detection engine below. The OML library ships with this site;
+        <a href="https://github.com/Open-SL/Chords-Transposer" rel="noopener noreferrer">chords-transposer</a> can help
+        on chord-only lines. Extensions after the root stay unchanged (maj9, m7b5, sus4/Eb, …).
+      </p>
+      <p class="subtle text-center simple-only">
+        Paste chords or lyrics with chords, choose how they are detected, then shift by key or semitones (half-steps).
+      </p>
+
+      <fieldset class="view-mode-fieldset">
+        <legend class="view-mode-legend">Display</legend>
+        <div class="view-mode-toggle" role="radiogroup" aria-label="Display mode">
+          <label class="view-mode-option">
+            <input type="radio" name="transpose-view" value="simple" checked />
+            Simple
+          </label>
+          <label class="view-mode-option">
+            <input type="radio" name="transpose-view" value="advanced" />
+            Advanced
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="engine-fieldset">
+        <legend class="simple-method-legend">
+          <span class="advanced-only">Chord detection engine</span>
+          <span class="simple-only">Chord detection</span>
+        </legend>
+        <div class="simple-method-toggle" role="radiogroup" aria-label="Chord detection engine">
+          <label class="view-mode-option">
+            <input type="radio" name="transpose-engine" value="native" checked />
+            <span class="simple-only">Built-In</span>
+            <span class="advanced-only">omusiclab library (Built-In)</span>
+          </label>
+          <label class="view-mode-option">
+            <input type="radio" name="transpose-engine" value="vendor" />
+            <span class="simple-only">Open-SL</span>
+            <span class="advanced-only"><a href="https://github.com/Open-SL/Chords-Transposer" rel="noopener noreferrer"></a>chords-transposer (Open-SL)</a></span>
+          </label>
+        </div>
+      </fieldset>
+
+      <p class="hint advanced-only" id="lib-version"></p>
+
+      <fieldset class="simple-method-fieldset simple-only">
+        <legend class="simple-method-legend">Transpose using</legend>
+        <div class="simple-method-toggle" role="radiogroup" aria-label="How to set the shift">
+          <label class="view-mode-option">
+            <input type="radio" name="simple-method" value="keys" checked />
+            Keys (from → to)
+          </label>
+          <label class="view-mode-option">
+            <input type="radio" name="simple-method" value="steps" />
+            Semitones (half-steps)
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="controls-grid keys-block">
+        <div class="pair-keys">
+          <div class="dropdown">
+            <label for="key-from"><span class="advanced-only">From key</span><span class="simple-only">Starting key</span></label>
+            <select id="key-from" aria-label="Starting key"></select>
+          </div>
+          <div class="dropdown">
+            <label for="key-to"><span class="advanced-only">To key</span><span class="simple-only">New key</span></label>
+            <select id="key-to" aria-label="New key"></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="semitone-row steps-block">
+        <label class="advanced-only" for="semitone-range">Semitones (−12 … +12)</label>
+        <label class="simple-only" for="semitone-range">Semitones (half-steps) up or down</label>
+        <input id="semitone-range" type="range" min="-12" max="12" value="2" step="1" />
+        <div class="number-inline">
+          <input id="semitone-input" type="number" min="-12" max="12" value="2" step="1" />
+          <span class="subtle advanced-only">half-steps</span>
+          <span class="subtle simple-only">semitones</span>
+        </div>
+      </div>
+
+      <label class="checkbox-row advanced-only">
+        <input type="checkbox" id="prefer-flats" />
+        Prefer flat spellings (Eb vs D#)
+      </label>
+
+      <label class="field-label" for="song-input">Your music</label>
+      <textarea id="song-input" class="oml-field" spellcheck="false"></textarea>
+
+      <div class="actions">
+        <button type="button" class="primary" id="transpose-btn">Transpose</button>
+        <button type="button" class="ghost" id="copy-btn">Copy result</button>
+      </div>
+
+      <label class="field-label" for="song-output">Transposed</label>
+      <textarea id="song-output" class="oml-field" spellcheck="false" readonly rows="7" aria-live="polite"></textarea>
+
+    </section>
+
+    <footer>
+      <p>
+        Part of <strong>oMusicLab tools</strong> ·
+        <a href="https://www.omusiclab.com/chord-diagram-generator/">Chord Diagram Generator</a>
+      </p>
+    </footer>
+
+    <script src="../shared/oml-chord-transpose.js"></script>
+    <script src="./engines/chords-transposer.min.js"></script>
+    <script src="./engines/vendor-engine.js"></script>
+    <script src="./transposer.js" defer></script>
+  </body>
+</html>

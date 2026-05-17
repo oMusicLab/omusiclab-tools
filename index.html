@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>oMusicLab tools</title>
+    <link rel="stylesheet" href="./shared/omusiclab-theme.css" />
+    <style>
+      .list {
+        max-width: 22rem;
+        margin: 0 auto;
+        padding: 0 1rem 4rem;
+      }
+      .list h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 1rem 0 0.5rem;
+      }
+      .list ul {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0 0;
+      }
+      .list li {
+        margin-bottom: 0.75rem;
+      }
+      .list a.card {
+        display: block;
+        padding: 0.85rem 1rem;
+        border: solid thin var(--oml-edge);
+        border-radius: 0.2em;
+        background: var(--oml-panel);
+        color: var(--oml-text);
+        font-weight: 500;
+      }
+      .list a.card:hover {
+        border-color: rgba(16, 99, 71, 0.35);
+      }
+      .list .desc {
+        font-size: 0.8em;
+        color: var(--oml-muted);
+        margin-top: 0.35rem;
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <section id="body-container">
+      <div class="text-center margin-bottom">
+        <a href="https://www.omusiclab.com/" aria-label="oMusic Laboratory home">
+          <img
+            src="https://www.omusiclab.com/chord-diagram-generator/styles/img/oMusic%20Laboratory%20Logo.svg"
+            alt="oMusic Laboratory"
+            class="site-logo"
+            width="100"
+            height="100"
+          />
+        </a>
+        <div>oMusic Laboratory</div>
+      </div>
+
+      <div class="list">
+        <h1 class="text-center">Tools</h1>
+        <p class="subtle text-center">Small utilities in the spirit of omusiclab.com</p>
+        <ul>
+          <li>
+            <a class="card" href="./virtual-metronome/">
+              Virtual Metronome
+              <div class="desc">Tempo, tap tempo, and beats per measure</div>
+            </a>
+          </li>
+          <li>
+            <a class="card" href="./virtual-tuner/">
+              Virtual Tuner
+              <div class="desc">Guitar, ukulele, and violin · mic pitch &amp; cents meter</div>
+            </a>
+          </li>
+          <li>
+            <a class="card" href="./virtual-chord-transposer/">
+              Virtual Chord Transposer
+              <div class="desc">Transpose charts · OML library or Open-SL chord detection · Simple / Advanced</div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        <strong>oMusicLab tools</strong> ·
+        <a href="https://www.omusiclab.com/">oMusic Laboratory</a>
+      </p>
+    </footer>
+  </body>
+</html>

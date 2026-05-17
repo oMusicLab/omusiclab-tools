@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>oMusic | Virtual Metronome</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <section id="body-container" class="container-fluid">
+      <div class="text-center margin-bottom">
+        <a href="https://www.omusiclab.com/" aria-label="oMusic Laboratory home">
+          <img
+            src="https://www.omusiclab.com/chord-diagram-generator/styles/img/oMusic%20Laboratory%20Logo.svg"
+            alt="oMusic Laboratory"
+            class="site-logo"
+            width="120"
+            height="120"
+          />
+        </a>
+        <div>oMusic Laboratory</div>
+      </div>
+
+      <h1 class="tool-title text-center">Virtual Metronome</h1>
+      <p class="subtle text-center">Simple tempo and time signature. Sound on beat one is accented.</p>
+
+      <div class="beat-panel" aria-live="polite">
+        <div class="bpm-display" id="bpm-display"><span id="bpm-display-num">120</span><span class="unit">BPM</span></div>
+        <div id="beat-dots" class="beat-dots"></div>
+      </div>
+
+      <label class="textbox" for="bpm-slider">
+        <span>Tempo</span>
+      </label>
+      <input id="bpm-slider" type="range" min="30" max="300" value="120" step="1" aria-valuemin="30" aria-valuemax="300" />
+
+      <div class="controls-row">
+        <div class="textbox">
+          <label for="bpm-input">BPM</label>
+          <input id="bpm-input" type="number" min="30" max="300" value="120" inputmode="numeric" />
+        </div>
+        <div class="dropdown">
+          <label for="beats-select">Beats</label>
+          <select id="beats-select" aria-label="Beats per measure">
+            <option value="2">2 / 4</option>
+            <option value="3">3 / 4</option>
+            <option value="4" selected>4 / 4</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="toggle-btn">Start</button>
+        <button type="button" class="ghost" id="tap-btn">Tap tempo</button>
+      </div>
+
+      <p class="hint">
+        Status: <span id="running-label">Stopped</span>. Tap tempo uses recent taps (within about 2.5 seconds) to suggest a BPM.
+      </p>
+    </section>
+
+    <footer>
+      <p>
+        Part of <strong>oMusicLab tools</strong> · Match the feel of
+        <a href="https://www.omusiclab.com/chord-diagram-generator/">Chord Diagram Generator</a>
+      </p>
+    </footer>
+
+    <script src="./metronome.js" defer></script>
+  </body>
+</html>
