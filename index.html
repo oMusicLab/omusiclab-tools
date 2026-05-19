@@ -43,6 +43,22 @@
         font-weight: 400;
       }
     </style>
+    <script>
+      // Check if the user is visiting via the vercel.app URL
+      if (window.location.hostname.endsWith('.vercel.app')) {
+        // Attempt to ping your custom domain silently
+        fetch('https://tools.omusiclab.com', { mode: 'no-cors' })
+          .then(() => {
+            // If successful, redirect to the custom domain
+            window.location.replace('https://tools.omusiclab.com' + window.location.pathname);
+          })
+          .catch(() => {
+            // If the custom domain is expired/dead, do nothing 
+            // The user stays safely on the vercel.app URL
+            console.log('Custom domain unavailable, staying on vercel.app');
+          });
+      }
+    </script>
   </head>
   <body>
     <section id="body-container">
