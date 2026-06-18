@@ -3,26 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>oMusic | Virtual Chord Transposer</title>
+    <title>omusiclab | Chord Transposer</title>
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="../shared/oml-hub.css" />
+    <script src="../shared/oml-embed.js"></script>
   </head>
   <body class="transpose-view-simple transpose-simple-keys">
-    <section id="body-container" class="container-fluid">
-      <div class="text-center margin-bottom">
-        <a href="https://www.omusiclab.com/" aria-label="oMusic Laboratory home">
-          <img
-            src="https://www.omusiclab.com/chord-diagram-generator/styles/img/oMusic%20Laboratory%20Logo.svg"
-            alt="oMusic Laboratory"
-            class="site-logo"
-            width="120"
-            height="120"
-          />
-        </a>
-        <div>oMusic Laboratory</div>
-      </div>
-
-      <h1 class="tool-title text-center">Virtual Chord Transposer</h1>
-      <p class="subtle text-center advanced-only">
+<main id="body-container" class="container-fluid">
+      <h1 class="tool-title text-center">Chord Transposer</h1>
+<p class="subtle text-center advanced-only">
         Pick a chord-detection engine below. The OML library ships with this site;
         <a href="https://github.com/Open-SL/Chords-Transposer" rel="noopener noreferrer">chords-transposer</a> can help
         on chord-only lines. Extensions after the root stay unchanged (maj9, m7b5, sus4/Eb, …).
@@ -120,17 +109,20 @@
       <label class="field-label" for="song-output">Transposed</label>
       <textarea id="song-output" class="oml-field" spellcheck="false" readonly rows="7" aria-live="polite"></textarea>
 
-    </section>
+    </main>
 
     <footer>
       <p>
-        Part of <a href="https://omusiclab-tools.vercel.app/">oMusicLab tools</a>
+        Part of <a href="../">omusiclab tools</a>
       </p>
     </footer>
 
+    <script src="../shared/oml-logo-mark.js"></script>
+    <script src="../shared/oml-hub.js"></script>
     <script src="../shared/oml-chord-transpose.js"></script>
     <script src="./engines/chords-transposer.min.js"></script>
     <script src="./engines/vendor-engine.js"></script>
     <script src="./transposer.js" defer></script>
+    <script src="../shared/oml-embed-snippet.js" defer></script>
   </body>
 </html>

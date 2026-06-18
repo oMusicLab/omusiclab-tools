@@ -3,26 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>oMusic | Virtual Metronome</title>
+    <title>omusiclab | Metronome</title>
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="../shared/oml-hub.css" />
+    <script src="../shared/oml-embed.js"></script>
   </head>
   <body>
-    <section id="body-container" class="container-fluid">
-      <div class="text-center margin-bottom">
-        <a href="https://www.omusiclab.com/" aria-label="oMusic Laboratory home">
-          <img
-            src="https://www.omusiclab.com/chord-diagram-generator/styles/img/oMusic%20Laboratory%20Logo.svg"
-            alt="oMusic Laboratory"
-            class="site-logo"
-            width="120"
-            height="120"
-          />
-        </a>
-        <div>oMusic Laboratory</div>
-      </div>
-
-      <h1 class="tool-title text-center">Virtual Metronome</h1>
-      <p class="subtle text-center">Simple tempo and time signature. Sound on beat one is accented.</p>
+<main id="body-container" class="container-fluid">
+      <h1 class="tool-title text-center">Metronome</h1>
+<p class="subtle text-center">Simple tempo and time signature. Sound on beat one is accented.</p>
 
       <div class="beat-panel" aria-live="polite">
         <div class="bpm-display" id="bpm-display"><span id="bpm-display-num">120</span><span class="unit">BPM</span></div>
@@ -57,14 +46,17 @@
       <p class="hint">
         Status: <span id="running-label">Stopped</span>. Tap tempo uses recent taps (within about 2.5 seconds) to suggest a BPM.
       </p>
-    </section>
+    </main>
 
     <footer>
       <p>
-        Part of <a href="https://omusiclab-tools.vercel.app/">oMusicLab tools</a>
+        Part of <a href="../">omusiclab tools</a>
       </p>
     </footer>
 
+    <script src="../shared/oml-logo-mark.js"></script>
+    <script src="../shared/oml-hub.js"></script>
     <script src="./metronome.js" defer></script>
+    <script src="../shared/oml-embed-snippet.js" defer></script>
   </body>
 </html>

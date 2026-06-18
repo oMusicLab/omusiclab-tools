@@ -1,0 +1,160 @@
+var chord_name, x_axis, y_axis, target, note_axis, selected_staff, staff_count, lyrics, source, temp, selected_instrument, _text_staff, notes = [],
+    note = [],
+    tabs = [],
+    tab = [];
+
+function _check(e) {
+    if ("instrument-selector" == e)
+        if (tab.length > 0) $("#" + e).attr("disabled", "disabled");
+        else if (tabs.length > 0)
+        for (var t = 0; t <= tabs.length - 1; t++) {
+            if (tabs[t].length > 0) {
+                $("#" + e).attr("disabled", "disabled");
+                break
+            }
+            $("#" + e).removeAttr("disabled")
+        } else $("#" + e).removeAttr("disabled");
+    else if ("staff-selector" == e) {
+        if (selected_staff = $("#staff-selector option:selected").text(), (tab = tabs[selected_staff - 1]).length > 0) {
+            for (f = 0; f <= tab.length - 1; f++)
+                for (j = 0; j <= tab[f].length - 1; j++)
+                    for (notes.push(tab[f][j]), i = 0; i <= tab[f][j].length - 1; i++) note.push(tab[f][j][i]), _create("fret mark", $('[data-x-axis="' + tab[f][j][i].x + '"][data-y-axis="' + tab[f][j][i].y + '"]'), f + 1), 1 == !$('.switch > [data-value="viewTabs"]').parent().attr("checked") && _remove($(".selected"), "fret mark");
+            notes = [], note = []
+        }
+        $("#tabs-seq-screen-1").html("all"), $("#tabs-seq-screen-2").html(tab.length)
+    } else "sequence-edit" == e ? ("all" != $("#tabs-seq-screen-1").html() ? (_show($("#tab-seq-edit"), "yes"), _show($("#tab-seq-delete"), "yes")) : (_show($("#tab-seq-edit"), "no"), _show($("#tab-seq-delete"), "no")), _show($("#tab-seq-save"), "no"), _show($("#tab-seq-back"), "no")) : "sequence-back" == e ? "all" != $("#tabs-seq-screen-1").html() ? _show($("#tab-seq-back"), "yes") : _show($("#tab-seq-back"), "no") : "sequence-save" == e || "reset" == e && ($("#staff-selector option").size() > 1 || 0 != tab.length || "" != $("#generator_lyrics").val()) && confirm("Are you sure you want to reset workspace?") && ($("#tabs-generator *").remove(), $("#staff-selector option").remove(), $("#instrument-selector").removeAttr("disabled"), noteSplice("all"), noteSplice(tabs), _create("staff", $("#tabs-generator"), ""), $("#generator_lyrics").val(""), alertBanner($("#alert-container"), "", "default", "RESET!"))
+}
+
+function noteSplice(e) {
+    if ("all" == e) $(".selected + .tab_num").remove(), $(".selected").remove(), tab = [], notes = [], note = [];
+    else
+        for (var t = e.length - 1; t >= 0; t--) x_axis == e[t].x && ($('[data-x-axis="' + e[t].x + '"][data-y-axis="' + e[t].y + '"] .selected + .tab_num').remove(), $('[data-x-axis="' + e[t].x + '"][data-y-axis="' + e[t].y + '"] .selected').remove(), e.splice(t, 1));
+    $("#tabs-seq-screen-1").html("all"), $("#tabs-seq-screen-2").html(tab.length)
+}
+
+function copyToClipboard(e) {
+    if (window.getSelection && (window.getSelection().empty ? window.getSelection().empty() : window.getSelection().removeAllRanges && window.getSelection().removeAllRanges()), $("#" + e).css({
+            "-webkit-user-select": "auto",
+            "-moz-user-select": "auto",
+            "-ms-user-select": "auto",
+            "user-select": "auto"
+        }), document.selection)(t = document.body.createTextRange()).moveToElementText(document.getElementById(e)), t.select();
+    else if (window.getSelection) {
+        var t;
+        (t = document.createRange()).selectNode(document.getElementById(e)), window.getSelection().addRange(t)
+    }
+    $("#" + e).select(), document.execCommand("copy"), window.getSelection ? window.getSelection().empty ? window.getSelection().empty() : window.getSelection().removeAllRanges && window.getSelection().removeAllRanges() : document.selection && document.selection.empty(), $("#" + e).css({
+        "-webkit-user-select": "none",
+        "-moz-user-select": "none",
+        "-ms-user-select": "none",
+        "user-select": "none"
+    })
+}
+
+function generate_note(e, t, s) {
+    $("#tabs-generator .staff:nth-child(" + t + ")").html(function(e, t) {
+        for (var a = t.split("-||"), n = 0, r = [], o = 0; o < s.length; o++) s[o].y.toString().length > n && (n = s[o].y.toString().length);
+        for (var c = 0; c < a.length - 1; c++) e: for (var l = 0; l < a.length; l++) {
+            if (!(s.length > l)) {
+                r.push(n > 1 ? "--" : "-");
+                break e
+            }
+            if (s[l].x == c + 1) {
+                r.push(s[l].y + (s[l].y.toString().length < n ? "-" : ""));
+                break e
+            }
+        }
+        for (var i = 0; i < a.length - 1; i++) "-" == r[i] && "--" == r[i] || (a[i] = a[i] + r[i] + "-");
+        return a.join("-||")
+    }), notes.push(note), tab.push(notes), notes = [], note = [], $("#tabs-seq-screen-1").html("all"), $("#tabs-seq-screen-2").html(tab.length)
+}
+
+function generator_append(e, t, s, a) {
+    "append_lyrics" == e && $("#tabs-generator .staff:nth-child(" + a + ") content").html(function(e, t) {
+        return s
+    })
+}
+
+function _create(e, t, s) {
+    "staff" == e ? (staff_count = $("#tabs-generator .staff").length + 1, $("#staff-selector").append("<option selected>" + staff_count + "</option>"), "guitar" == (selected_instrument = $("#instrument-selector option:selected").text()) ? _text_staff = '<div class="staff"><content class="lyrics">' + s + "</content></br>e||--||</br>B||--||</br>G||--||</br>D||--||</br>A||--||</br>E||--||</div>" : "ukulele" == selected_instrument && (_text_staff = '<div class="staff"><content class="lyrics">' + s + "</content></br>A||--||</br>E||--||</br>C||--||</br>G||--||</div>"), t.html(t.html() + _text_staff)) : "bar" == e ? (selected_staff = $("#staff-selector option:selected").text(), $("#tabs-generator .staff:nth-child(" + selected_staff + ")").html(function(e, t) {
+        var s = t.split("-||");
+        for (e = 0; e < s.length - 1; e++) s[e] = s[e] + "|-";
+        return s.join("-||")
+    })) : "fret mark" == e && (t.append('<div class="selected"></div><span class="tab_num">' + s + "</span>"), $(".selected", t).css({
+        // "display": "block",
+        // "padding": "0",
+        // "margin": "0 calc(50% - 10px) 0 calc(50% - 10px)",
+        // "width": "0px",
+        // "height": "0px",
+        // "margin-top": "-9px",
+        // "border-radius": "999px",
+        // "z-index": "3"
+    }), 0 == t.attr("data-y-axis") && $(".selected", t).css({
+        "margin-top": "-21px"
+    }))
+}
+
+function _remove(e, t) {
+    "clear-staff" == t ? ("guitar" == $("#instrument-selector").val() ? _text_staff = '<content class="lyrics"></content></br>e||--||</br>B||--||</br>G||--||</br>D||--||</br>A||--||</br>E||--||' : "ukulele" == $("#instrument-selector").val() && (_text_staff = '<content class="lyrics"></content></br>E||--||</br>A||--||</br>D||--||</br>G||--||'), tabs[selected_staff - 1] = [], selected_staff = $("#tabs-generator .staff:nth-child(" + e + ")"), $(selected_staff, "#tabs-generator").html(_text_staff), selected_staff = $(".staff:nth-child(" + $("#staff-selector").val() + ")"), $("#generator_lyrics").val($("> content", selected_staff).html())) : "delete-staff" == t && ($("#staff-selector option").size() > 1 || 0 != tab.length || "" != $("#generator_lyrics").val()) ? (selected_staff = $("#tabs-generator .staff:nth-child(" + e + ")"), confirm("Are you sure you want to delete selected tab?") && (tabs[e - 1] = tab, tabs.splice(e - 1, 1), console.log(tabs), $(selected_staff, "#tabs-generator").remove(), $("#staff-selector option:last-child").remove(), 0 == $("#staff-selector option").length ? (selected_staff = $("#staff-selector option:selected").text(), _create("staff", $("#tabs-generator"), ""), $("#generator_lyrics").val(""), tabs[selected_staff - 1] = tab, noteSplice("all"), tab = []) : tab = tabs[$("#staff-selector").val() - 1], selected_staff = $(".staff:nth-child(" + $("#staff-selector").val() + ")"), $("#generator_lyrics").val($("> content", selected_staff).html()), $("#staff-selector").click(), alertBanner($("#alert-container"), "", "red", "Staff Deleted!"))) : "fret mark" == t ? (e.css({
+        display: "none"
+    }), $("+ .tab_num", e).css({
+        display: "none"
+    })) : "all" == e && ($("#tabs-generator *").remove(), $("#staff-selector option").remove(), $("#instrument-selector").removeAttr("disabled"), _create("staff", $("#tabs-generator"), ""), $("#generator_lyrics").val(""), noteSplice("all"), noteSplice(tabs))
+}
+
+function _show(e, t) {
+    "yes" == t ? e.removeAttr("hidden") : e.attr("hidden", "hidden")
+}
+$("body").ready(function() {
+    $("body").on("click", "#instrument_fret-board .string .fret", function(e) {
+        target = $("#tabs-generator"), chord_name = $(this).data("chord-name"), x_axis = $(this).data("x-axis"), y_axis = $(this).data("y-axis"), selected_staff = $("#staff-selector option:selected").text(), (temp = new Object).x = x_axis, temp.y = y_axis, temp.chord = chord_name, noteSplice(note), note.push(temp), source = tab.length + 1, _create("fret mark", $(this), source), !0 !== e.ctrlKey && (generate_note(target, selected_staff, note), 1 == !$('.switch > [data-value="viewTabs"]').parent().attr("checked") && setTimeout(function() {
+            _remove($(".selected"), "fret mark")
+        }, 300)), _check("instrument-selector"), _check("sequence-edit"), console.log(tab)
+    }), $("body").on("keypress keyup", function(e) {
+        if (target = $("#tabs-generator"), selected_staff = $("#staff-selector option:selected").text(), 1 == !$('.switch > [data-value="viewTabs"]').parent().attr("checked") && setTimeout(function() {
+                _remove($(".selected"), "fret mark")
+            }, 300), "keyup" == e.type && 17 === e.keyCode && "" != note) generate_note(target, selected_staff, note), _check("instrument-selector");
+        else if ("keypress" != e.type || $("#generator_lyrics").is(":focus") || 32 !== e.keyCode) 1 != e.shiftKey || $("#generator_lyrics").is(":focus") || 220 !== e.keyCode || _create("bar", target);
+        else {
+            for (var t = 5; t >= 0; t--)(temp = new Object).x = 0, temp.y = 0, temp.chord = 0, notes.push(temp);
+            generate_note(target, selected_staff, note)
+        }
+    }), $("body").on("click", '.switch > [data-value="viewTabs"]', function() {
+        $(".selected", "#instrument_fret-board").toggle(), $(".selected + .tab_num", "#instrument_fret-board").toggle()
+    }), $("body").on("keyup keypress", "#generator_lyrics", function(e) {
+        request = "append_lyrics", target = $("#tabs-generator content"), source = $("#generator_lyrics").val(), selected_staff = $("#staff-selector option:selected").text(), generator_append(request, target, source, selected_staff)
+    }), $("body").on("click change", "#staff-selector", function(e) {
+        selected_staff = $("#staff-selector option:selected").text(), target = $("#tabs-generator .staff:nth-child(" + selected_staff + ") > content").html(), $("#generator_lyrics").val(target), "click" == e.type && (tabs[selected_staff - 1] = tab), noteSplice("all"), _check("staff-selector")
+    }), $("body").on("click", "#tabs-generator_new-staff", function() {
+        selected_staff = $("#staff-selector option:selected").text(), _create("staff", $("#tabs-generator"), ""), $("#generator_lyrics").val(""), tabs[selected_staff - 1] = tab, noteSplice("all"), alertBanner($("#alert-container"), "", "green", "Staff Added!")
+    }), $("body").on("click", "#tabs-generator_clear", function() {
+        _remove(selected_staff = $("#staff-selector option:selected").text(), "clear-staff"), noteSplice("all"), _check("instrument-selector")
+    }), $("body").on("click", "#tabs-generator_delete", function() {
+        _remove(selected_staff = $("#staff-selector option:selected").text(), "delete-staff"), _check("instrument-selector")
+    }), $("body").on("click", "#tabs-generator_reset", function() {
+        _check("reset")
+    }), $("body").on("click", "#tabs-generator_bar", function() {
+        _create("bar", $("#tabs-generator"))
+    }), $("body").on("change", "#instrument-selector", function(e) {
+        selected_instrument = $("option:selected", this).text(), set_chord_name = $("#catalog-chord").val() + $("#catalog-quality").val() + $("#catalog-altbass").val(), generate("instrument", null, selected_instrument), noteSplice("all"), noteSplice(tabs), _remove("all")
+    }), $("body").on("click", ".copy", function() {
+        alertBanner($("#alert-container"), "", "yellow", "Text Copied!"), copyToClipboard($(this).data("copy"))
+    }), $("body").on("click", ["#tab-seq-prev", "#tab-seq-next", "#tab-seq-edit", "#tab-seq-delete", "#tab-seq-save", "#tab-seq-back"], function(e) {
+        var t = $("#tabs-seq-screen-1");
+        if (tab.length > 0 && ("tab-seq-prev" == e.target.id || "tab-seq-next" == e.target.id)) {
+            if ($('.switch > [data-value="viewTabs"]').parent().attr("checked", "checked"), source = Number(t.html()), "all" == t.html() && "tab-seq-next" == e.target.id ? source = 1 : "1" != t.html() && "all" != t.html() || "tab-seq-prev" != e.target.id ? t.html() < tab.length && "tab-seq-next" == e.target.id ? source += 1 : "tab-seq-prev" == e.target.id && (source -= 1) : source = "all", t.html(source), $(".selected + .tab_num").remove(), $(".selected").remove(), "all" != source) {
+                target = $("#tabs-generator");
+                for (var s = 0; s <= tab[source - 1].length - 1; s++)
+                    for (var a = 0; a <= tab[source - 1][s].length - 1; a++) chord_name = tab[source - 1][s][a].chord, x_axis = tab[source - 1][s][a].x, y_axis = tab[source - 1][s][a].y, selected_staff = $("#staff-selector option:selected").text(), (temp = new Object).x = x_axis, temp.y = y_axis, temp.chord = chord_name, _create("fret mark", $('.fret[data-x-axis="' + x_axis + '"][data-y-axis="' + y_axis + '"]'), source)
+            } else $("#staff-selector").click();
+            _check("sequence-edit")
+        } else if ("tab-seq-all" == e.target.id) $('.switch > [data-value="viewTabs"]').parent().attr("checked", "checked"), $("#staff-selector").click(), _check("sequence-edit");
+        else if ("tab-seq-edit" == e.target.id) _check("sequence-back"), _show($("#tab-seq-edit"), "no"), _show($("#tab-seq-delete"), "no");
+        else if ("tab-seq-delete" == e.target.id) {
+            if (!confirm("Are you sure you want to delete tab sequence?")) return !1;
+            "all" != t.html() && ($('.switch > [data-value="viewTabs"]').parent().attr("checked", "checked"), source = Number(t.html()), selected_staff = $("#staff-selector option:selected").text(), tab.splice(source - 1, 1), tabs[selected_staff - 1] = tab, $("#staff-selector").click(), _check("sequence-edit"))
+        } else "tab-seq-back" == e.target.id && _check("sequence-edit")
+    }), $("body").on("click", "#tab-seq-save", function() {
+        "all" != screenTarget.html() && ($('.switch > [data-value="viewTabs"]').parent().attr("checked", "checked"), $("#staff-selector").click())
+    })
+});

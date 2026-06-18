@@ -1,0 +1,385 @@
+/* Hub sidepanel — mirrors BibleCast AppFloatingSidebar + oml-app-shell */
+
+:root {
+  --oml-sidebar-w: 15rem;
+  --oml-sidebar-rail: 2.5rem;
+  --oml-hub-shadow-sm: rgba(0, 0, 0, 0.06);
+  --oml-hub-shadow-md: rgba(0, 0, 0, 0.1);
+  --oml-hub-hover-soft: var(--oml-accent-soft-bg);
+  --oml-hub-tab-active-bg: rgba(16, 99, 71, 0.08);
+}
+
+body.oml-has-hub {
+  display: block;
+  min-height: 100vh;
+}
+
+.oml-hub-shell {
+  min-height: 100vh;
+  width: 100%;
+  background: #fff;
+}
+
+.oml-hub-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(var(--oml-sidebar-w), 85vw);
+  background: var(--oml-panel);
+  border-right: 1px solid var(--oml-edge);
+  padding: 0.85rem 0;
+  box-shadow: 4px 0 16px var(--oml-hub-shadow-sm);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+}
+
+.oml-hub-shell--sidebar-collapsed .oml-hub-sidebar {
+  transform: translateX(calc(-1 * var(--oml-sidebar-w) + var(--oml-sidebar-rail)));
+  box-shadow: 4px 0 20px var(--oml-hub-shadow-md);
+}
+
+.oml-hub-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem 0.7rem;
+  border-bottom: 1px solid var(--oml-border);
+  margin-bottom: 0.55rem;
+  flex-shrink: 0;
+}
+
+.oml-hub-sidebar-brand {
+  min-width: 0;
+  flex: 1;
+  padding-left: 0.05rem;
+}
+
+.oml-hub-brand {
+  display: block;
+  text-decoration: none;
+}
+
+.oml-hub-brand:hover {
+  opacity: 1;
+}
+
+.oml-logo-mark {
+  display: block;
+  width: 7.5rem;
+  height: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+.oml-logo-mark__ink {
+  fill: var(--oml-text);
+}
+
+.oml-logo-mark__accent {
+  fill: var(--oml-accent-text);
+}
+
+.oml-hub-sidebar-head .oml-hub-icon-btn {
+  margin-right: -0.05rem;
+}
+
+.oml-hub-icon-btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--oml-border);
+  border-radius: 0.5em;
+  background: #fff;
+  color: var(--oml-text);
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 0;
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.oml-hub-sidebar-toggle-icon {
+  display: block;
+  width: 1.2rem;
+  height: 1.2rem;
+  overflow: visible;
+}
+
+.oml-hub-sidebar-toggle-frame {
+  stroke: currentColor;
+  stroke-width: 1.75;
+  fill: none;
+  transition: stroke 0.2s ease;
+}
+
+.oml-hub-sidebar-toggle-rail {
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  opacity: 0.45;
+  transition: opacity 0.25s ease, transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: 9.5px 12px;
+}
+
+.oml-hub-sidebar-toggle-fill {
+  fill: currentColor;
+  opacity: 0.12;
+  transform-origin: 6.75px 12px;
+  transition:
+    opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.oml-hub-sidebar-toggle-chevron-wrap {
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: 11.25px 12px;
+}
+
+.oml-hub-sidebar-toggle-chevron {
+  stroke: currentColor;
+  stroke-width: 1.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.oml-hub-sidebar-toggle--collapsed .oml-hub-sidebar-toggle-fill {
+  opacity: 0.22;
+  transform: scaleX(0.42);
+}
+
+.oml-hub-sidebar-toggle--collapsed .oml-hub-sidebar-toggle-rail {
+  opacity: 0.65;
+  transform: translateX(-2.5px);
+}
+
+.oml-hub-sidebar-toggle--collapsed .oml-hub-sidebar-toggle-chevron-wrap {
+  transform: rotate(180deg);
+}
+
+.oml-hub-icon-btn:hover .oml-hub-sidebar-toggle-fill {
+  opacity: 0.18;
+}
+
+.oml-hub-icon-btn:hover.oml-hub-sidebar-toggle--collapsed .oml-hub-sidebar-toggle-fill {
+  opacity: 0.28;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oml-hub-sidebar-toggle-fill,
+  .oml-hub-sidebar-toggle-rail,
+  .oml-hub-sidebar-toggle-chevron-wrap,
+  .oml-hub-icon-btn {
+    transition: none;
+  }
+}
+
+.oml-hub-icon-btn:hover {
+  background: var(--oml-panel);
+  border-color: var(--oml-accent-focus);
+}
+
+.oml-hub-icon-btn:focus-visible {
+  outline: 2px solid var(--oml-accent-text);
+  outline-offset: 2px;
+}
+
+.oml-hub-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.25rem 0;
+}
+
+.oml-hub-nav[aria-label="Primary"] {
+  display: flex;
+  flex-direction: column;
+}
+
+.oml-hub-section {
+  margin-top: 0.35rem;
+}
+
+.oml-hub-section-label {
+  margin: 0.35rem 0.75rem 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--oml-muted);
+}
+
+.oml-hub-link,
+.oml-hub-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--oml-text);
+  border: 0;
+  border-left: 3px solid transparent;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.oml-hub-link:hover,
+.oml-hub-nav-btn:hover {
+  opacity: 1;
+  background: var(--oml-hub-hover-soft);
+  text-decoration: none;
+  color: var(--oml-text);
+}
+
+.oml-hub-link[aria-current="page"],
+.oml-hub-nav-btn.is-active {
+  border-left-color: var(--oml-accent-text);
+  background: var(--oml-hub-tab-active-bg);
+  color: var(--oml-accent-text);
+}
+
+.oml-hub-disclosure {
+  margin-top: 0.15rem;
+}
+
+.oml-hub-disclosure-toggle {
+  justify-content: space-between;
+}
+
+.oml-hub-disclosure-toggle.is-open {
+  background: var(--oml-hub-hover-soft);
+}
+
+.oml-hub-disclosure-chevron {
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0.72;
+  transition: transform 0.2s ease;
+}
+
+.oml-hub-disclosure-chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.oml-hub-disclosure-panel {
+  display: none;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.oml-hub-disclosure-panel.is-open {
+  display: flex;
+}
+
+.oml-hub-disclosure-panel .oml-hub-link {
+  padding-left: 1.35rem;
+  font-size: 0.8125rem;
+}
+
+.oml-hub-main {
+  min-height: 100vh;
+  margin-left: var(--oml-sidebar-rail);
+  transition: margin-left 0.25s ease;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+@media (min-width: 60rem) {
+  .oml-hub-main {
+    margin-left: var(--oml-sidebar-w);
+  }
+}
+
+.oml-hub-shell--sidebar-collapsed .oml-hub-main {
+  margin-left: var(--oml-sidebar-rail);
+}
+
+@media (min-width: 40rem) {
+  .oml-hub-sidebar {
+    width: var(--oml-sidebar-w);
+  }
+}
+
+body.oml-has-hub .oml-hub-main #body-container {
+  max-width: 42rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+body.oml-has-hub.oml-hub-home .oml-hub-main #body-container {
+  max-width: 48rem;
+  padding-top: 2rem;
+}
+
+body.oml-has-hub .oml-hub-main footer {
+  margin-top: auto;
+}
+
+.oml-hub-welcome-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+  color: var(--oml-text);
+}
+
+.oml-hub-welcome-lead {
+  font-size: 0.95rem;
+  color: var(--oml-muted);
+  margin: 0 0 1.75rem;
+  line-height: 1.55;
+}
+
+.oml-hub-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 0.85rem;
+}
+
+.oml-hub-card {
+  display: block;
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--oml-edge);
+  border-radius: 0.45em;
+  background: var(--oml-panel);
+  color: var(--oml-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.oml-hub-card:hover {
+  opacity: 1;
+  border-color: var(--oml-accent-focus);
+  box-shadow: 0 2px 10px var(--oml-accent-glow);
+}
+
+.oml-hub-card-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin: 0 0 0.3rem;
+  color: var(--oml-text);
+}
+
+.oml-hub-card-desc {
+  font-size: 0.78rem;
+  color: var(--oml-muted);
+  margin: 0;
+  line-height: 1.4;
+}

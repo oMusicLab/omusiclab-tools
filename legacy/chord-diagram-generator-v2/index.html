@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>oMusic | Chord Diagram Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/svg+xml" | sizes="any" href="favicon.svg">
+    <link rel="profile" href="http://gmpg.org/xfn/11">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <meta property="fb:app_id" content="318138918776445" />
+    <meta property="og:site_name" content="oMusic Laboratory"/>
+    <meta property="og:title" content="Chord Diagram Generator"/>
+    <meta property="og:description" content="A simple guitar & ukulele chord diagram generator."/>
+    <meta property="og:url" content="https://diagrams.omusiclab.com/">
+    <meta property="og:image" content="https://diagrams.omusiclab.com/thumb_screenshot.png">
+    <meta property="og:image:alt" content="A simple guitar & ukulele chord diagram generator.">
+    <meta property="og:type" content="website"/><link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="stylesheet" href="./library/bootstrap-4-grid/grid.min.css">
+    <link rel="stylesheet" href="./styles/css/master.css">
+</head>
+<body>
+    <section id="body-container" class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 text-center margin-bottom">
+                <a href="https://omusiclab-landingpage.vercel.app/">
+                    <img src="./styles/img/oMusic Laboratory Logo.svg" alt="oMusic Laboratory" class="site-logo">
+                </a>
+                <div>oMusic Laboratory</div>
+            </div>
+        </div>
+        <div class="dropdown" data-type="text">
+            <label for="dropdown">Instrument</label>
+            <select id="instrument-selector"><option value="guitar">guitar</option><option value="ukulele">ukulele</option></select>
+        </div>
+        <div class="textbox">
+            <label for="input">Note </label>
+            <input type="text" id="chord_name" maxlength="10" value="C" />
+        </div>
+        <div class="textbox">
+            <label for="input">Diagram Code </label>
+            <input type="text" id="chord_code" value="X32O1O"/>
+        </div>
+        <div class="textbox">
+            <label for="input">Number of frets </label>
+            <input type="number" id="fret_count" max="7" min="4" placeholder="0" value="5"/>
+        </div>
+        <div id="chord-generator"></div> 
+    </section>
+    
+    <footer>
+        <p>Powered by <strong>oMusic JS Library</strong></p>
+    </footer>
+    <script type="text/javascript" src="./library/jquery/1.8.2/jquery.min.js?v=1.1.0"></script>
+    <script type="text/javascript" src="./library/html2canvas/html2canvas.js?v=1.1.0"></script>
+    <script type="text/javascript" src="./styles/js/chords/chords.js?v=1.5.0"></script>
+</body>
+</html>

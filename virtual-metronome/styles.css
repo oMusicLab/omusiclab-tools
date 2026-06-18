@@ -32,7 +32,7 @@
 
 .beat-dot.accent.active {
   background: var(--oml-accent-text);
-  box-shadow: 0 0 0 2px rgba(16, 99, 71, 0.25);
+  box-shadow: 0 0 0 2px var(--oml-accent-glow);
 }
 
 .bpm-display {

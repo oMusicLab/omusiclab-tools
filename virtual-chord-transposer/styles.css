@@ -110,7 +110,7 @@ textarea.oml-field {
 
 textarea.oml-field:focus {
   outline: none;
-  border-color: rgba(16, 99, 71, 0.35);
+  border-color: var(--oml-accent-focus);
 }
 
 .field-label {

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta property="og:title" content="oMusic Laboratory">
+    <meta property="og:description" content="Music tools accessible on the web.">
+    <meta property="og:image" content="../assets/img/oMusic-piano-featured-image.jpg">
+    <meta property="og:url" content="https://omusiclab-landingpage.vercel.app/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:site_name" content="oMusic Laboratory">
+    <meta name="twitter:image:alt" content="oMusic Laboratory Logo">
+
+    <title> oMusic Laboratory - Music tools accessible on the web.</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" href="assets/sass/css/omusic.css">
+    <link rel="stylesheet" href="assets/sass/css/piano.css">
+</head>
+<body id="om-body">
+    <nav class="om-nav navbar">
+        <a href="https://omusiclab-landingpage.vercel.app/">
+            <h1 class="om-site-title">oMusic</h1><span>Laboratory</span>
+        </a>
+    </nav>
+    
+    <header id="om-header">
+        <div class="virtual-instrument">
+            <div id="piano"></div>
+        </div>
+    </header>
+
+    <div class="om-container">
+        <div class="dropdown">
+            <label for="catalog-chord">Note: </label>
+            <select name="catalog-chord" id="catalog-chord">
+                <option value="">--- Choose ---</option>
+                <option>C</option>
+                <option>C#</option>
+                <option>D</option>
+                <option>D#</option>
+                <option>E</option>
+                <option>F</option>
+                <option>F#</option>
+                <option>G</option>
+                <option>G#</option>
+                <option>A</option>
+                <option>A#</option>
+                <option>B</option>
+            </select>
+        </div>
+        <div class="dropdown">
+            <label for="catalog-quality">Quality: </label>
+            <select name="catalog-quality" id="catalog-quality">
+                <option value="Major (triad)">Major</option>
+                <option value="Minor (triad)">Minor</option>
+                <option value="Diminished triad">Diminished</option>
+                <option value="Major 6th">Major 6th</option>
+                <option value="Major 7th">Major 7th</option>
+                <option value="Suspended">Suspended</option>
+                <option value="2">2</option>
+                <option value="Major 7+">Major 7+</option>
+                <option value="m7th">m7th</option>
+                <option value="m7b5">m7b5</option>
+                <option value="m7+">m7+</option>
+                <option value="m6">m6</option>
+                <option value="m6/7">m6/7</option>
+                <option value="m7">m7</option>
+                <option value="Dominant 7th">Dominant 7th</option>
+                <option value="Dominant 7/6th">Dominant 7/6th</option>
+                <option value="Dominant 7sus">Dominant 7sus</option>
+                <option value="Dominant 7/6sus">Dominant 7/6sus</option>
+                <option value="Dominant 7+">Dominant 7+</option>
+                <option value="Dominant 7b5">Dominant 7b5</option>
+                <option value="+">+</option>
+                <option value="Diminished 7th">Diminished 7th</option>
+                <option value="Diminished 7/7th">Diminished 7/7th</option>
+            </select>
+        </div>
+        <div class="dropdown" style="display:none;">
+            <label for="catalog-scale">Scale: </label>
+            <select name="catalog-scale" id="catalog-scale"><option>Major</option><option>Natural Minor</option><option>Harmonic Minor</option><option>Melodic Minor (Ascending)</option><option>Melodic Minor (Descending)</option><option>Pentatonic Major</option><option>Pentatonic Minor</option><option>Chromatic</option></select>
+        </div>
+        <ul id="debugger" class="om-list">
+            <li><span class="silent">Chord name: </span>_ <span class="silent"> | </span> <span class="silent">Major scale notes: </span>_ <span class="silent"> | </span> <span class="silent">Chord construction formula: </span>_ <span class="silent"> or </span> _</li>
+        </ul>
+        <div class="om-list">
+            <div class="om-container" style="max-width: 615px;">
+<pre>
+    <strong>TITLE:</strong>         oMusic Piano Virtual Instrument
+    <strong>FEATURES:</strong>      • Virtual instrument with audio.
+                   • Single-touch enabled.
+                   • Supports: note and chord quality.
+    <strong>DESCRIPTION:</strong>   Piano virtual instrument accessible on web.
+    <strong>VERSION:</strong>       <kbd>1.2.1</kbd>
+</pre>
+            </div>
+        </div>
+    </div>
+    <footer id="om-footer">
+        <span>Powered by </span>
+        <a target="__blank" href="https://tonejs.github.io/">Tone.js</a><span>, </span>
+        <a target="__blank" href="https://api.jquery.com/">jQuery</a><span> and </span>
+        <a target="__blank" href="https://sass-lang.com/documentation/">Sass</a>
+        <span> | </span>
+        <span>Made with ♡ by </span><a target="__blank" href="https://portfolio.chiedimla.com">Chie</a>
+    </footer>
+    <script src="vendor/tone/Tone.js"></script>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="assets/js/chordformula.js"></script>
+    <script src="assets/js/piano.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-/* Aligns with omusiclab.com chord-diagram-generator master.css tokens */
+/* omusiclab tools shared theme */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap");
 
 :root {
@@ -7,8 +7,13 @@
   --oml-border: rgba(51, 51, 51, 0.1);
   --oml-panel: #fafafa;
   --oml-edge: #cccccc;
-  --oml-accent: aquamarine;
   --oml-accent-text: #106347;
+  --oml-accent-focus: rgba(16, 99, 71, 0.35);
+  --oml-accent-glow: rgba(16, 99, 71, 0.25);
+  --oml-accent-soft-bg: rgba(16, 99, 71, 0.06);
+  --oml-accent-ring: rgba(16, 99, 71, 0.45);
+  --oml-accent-meter: rgba(16, 99, 71, 0.2);
+  --oml-accent-meter-strong: rgba(16, 99, 71, 0.28);
   --oml-footer: #f2f2f2;
 }
 
@@ -20,11 +25,16 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  height: 100%;
 }
 
 body {
   margin: 0;
-  padding: 0 0 4.5rem;
+  padding: 0;
+  min-height: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   font-family: "Poppins", sans-serif;
   background-color: #fff;
   color: var(--oml-text);
@@ -46,26 +56,12 @@ a:hover {
   text-align: center;
 }
 
-.margin-bottom {
-  margin-bottom: 2em;
-}
-
-.site-logo {
-  transform: rotate(-12deg);
-  margin: 12px;
-  max-height: 100px;
-  width: auto;
-  transition: transform 0.2s;
-}
-
-.site-logo:hover {
-  transform: rotate(0deg);
-}
-
 #body-container {
-  margin: 0 auto 2em;
+  flex: 1 1 auto;
+  width: 100%;
   max-width: 22rem;
-  padding: 0 1rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 1.5rem;
 }
 
 .textbox label,
@@ -112,19 +108,21 @@ select:focus {
 
 input:focus,
 select:focus {
-  border-color: rgba(16, 99, 71, 0.35);
+  border-color: var(--oml-accent-focus);
 }
 
 footer {
+  flex-shrink: 0;
   background-color: var(--oml-footer);
   color: var(--oml-muted);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 0.5em;
+  padding: 0.65em 1rem;
   font-size: 0.75em;
   text-align: center;
+  border-top: 1px solid var(--oml-border);
+}
+
+footer p {
+  margin: 0;
 }
 
 footer strong {
@@ -135,7 +133,7 @@ footer strong {
 .tool-title {
   font-size: 1.25rem;
   font-weight: 600;
-  margin: 0.25rem 0 1rem;
+  margin: 0.25rem 0 0.5rem;
   color: var(--oml-text);
 }
 
@@ -143,4 +141,214 @@ footer strong {
   font-size: 0.85em;
   color: var(--oml-muted);
   margin-top: 0.25rem;
+}
+
+/* Embed mode: header hidden by default; footer always shown */
+html.oml-embed-pending:not(.oml-embed-show-header) .tool-title,
+html.oml-embed-pending:not(.oml-embed-show-header) .subtle,
+body.oml-embed:not(.oml-embed-show-header) .tool-title,
+body.oml-embed:not(.oml-embed-show-header) .subtle {
+  display: none;
+}
+
+body.oml-embed {
+  min-height: auto;
+  overflow: visible;
+}
+
+html.oml-embed-pending,
+html.oml-embed-pending body {
+  overflow: visible;
+}
+
+body.oml-embed #body-container {
+  padding-bottom: 0.5rem;
+}
+
+body.oml-embed .oml-embed-dialog,
+body.oml-embed .oml-embed-open,
+body.oml-embed .oml-embed-footer-sep {
+  display: none;
+}
+
+.oml-embed-open {
+  font: inherit;
+  font-size: inherit;
+  color: var(--oml-accent-text);
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.oml-embed-open:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+.oml-embed-open:focus-visible {
+  outline: 2px solid var(--oml-accent-text);
+  outline-offset: 2px;
+  border-radius: 0.15em;
+}
+
+footer .oml-embed-footer-sep {
+  color: var(--oml-muted);
+}
+
+.oml-embed-dialog {
+  border: none;
+  border-radius: 0.65em;
+  padding: 0;
+  width: min(22rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: #fff;
+  color: var(--oml-text);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+}
+
+.oml-embed-dialog::backdrop {
+  background: rgba(51, 51, 51, 0.45);
+}
+
+.oml-embed-panel {
+  padding: 1.25rem 1.25rem 1rem;
+  margin: 0;
+}
+
+.oml-embed-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.15rem;
+}
+
+.oml-embed-close {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: -0.15rem -0.15rem 0 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.35em;
+  background: transparent;
+  color: var(--oml-muted);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.oml-embed-close:hover {
+  background: var(--oml-panel);
+  color: var(--oml-text);
+}
+
+.oml-embed-close:focus-visible {
+  outline: 2px solid var(--oml-accent-text);
+  outline-offset: 2px;
+}
+
+.oml-embed-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+  color: var(--oml-text);
+}
+
+.oml-embed-lead {
+  font-size: 0.8rem;
+  color: var(--oml-muted);
+  margin: 0 0 0.85rem;
+  line-height: 1.45;
+}
+
+.oml-embed-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.oml-embed-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--oml-text);
+}
+
+.oml-embed-option-label {
+  font-weight: 500;
+}
+
+.oml-embed-option input[type="color"] {
+  width: 2.25rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--oml-border);
+  border-radius: 0.35em;
+  background: #fff;
+  cursor: pointer;
+}
+
+.oml-embed-checkbox input {
+  width: auto;
+  margin: 0;
+}
+
+.oml-embed-code-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--oml-muted);
+  margin-bottom: 0.35rem;
+}
+
+.oml-embed-code {
+  width: 100%;
+  height: 2.25rem;
+  min-height: 0;
+  margin: 0 0 0.65rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--oml-border);
+  border-radius: 0.5em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: var(--oml-text);
+  background: var(--oml-panel);
+  resize: none;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.oml-embed-copy {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.5em 1em;
+  border-radius: 0.5em;
+  cursor: pointer;
+  border: 1px solid var(--oml-border);
+  background: #fff;
+  color: var(--oml-text);
+  transition: background 0.2s;
+}
+
+.oml-embed-copy:hover {
+  background: var(--oml-panel);
+}
+
+.oml-embed-copy:focus-visible {
+  outline: 2px solid var(--oml-accent-text);
+  outline-offset: 2px;
 }

@@ -298,13 +298,26 @@
 
   function copyOutput() {
     var text = els.output.value;
+    var btn = els.copyBtn;
+    var defaultLabel = "Copy result";
+
+    function onCopied() {
+      btn.textContent = "Copied!";
+      setTimeout(function () {
+        btn.textContent = defaultLabel;
+      }, 1600);
+    }
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text);
+      navigator.clipboard.writeText(text).then(onCopied);
       return;
     }
     els.output.select();
     els.output.setSelectionRange(0, text.length);
-    document.execCommand("copy");
+    try {
+      document.execCommand("copy");
+      onCopied();
+    } catch (e) {}
   }
 
   restoreEngineFromStorage();

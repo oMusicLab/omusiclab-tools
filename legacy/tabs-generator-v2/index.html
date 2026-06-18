@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>oMusic | Tabs Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="profile" href="http://gmpg.org/xfn/11">
+  	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  	<!--[if lt IE 9]>
+  	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  	<![endif]-->
+  	<meta property="fb:app_id" content="318138918776445" />
+    <meta property="og:site_name" content="oMusic Laboratory"/>
+    <meta property="og:title" content="Tabs Generator"/>
+    <meta property="og:description" content="A simple guitar & ukulele tabs generator."/>
+    <meta property="og:url" content="https://tabs.omusiclab.com/">
+    <meta property="og:image" content="https://tabs.omusiclab.com/thumb_screenshot.jpg">
+    <meta property="og:image:alt" content="A simple guitar & ukulele tabs generator.">
+    <meta property="og:type" content="website"/>
+    <link rel="stylesheet" href="./library/bootstrap-4-grid/grid.min.css">
+    <!-- <link rel="stylesheet" href="./node_modules/bootstrap/css/bootstrap.css"> -->
+    <!-- <link rel="stylesheet" href="./node_modules/bootstrap/css/bootstrap.theme.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="./styles/css/master.css">
+    <link rel="stylesheet" media="print" href="./styles/css/print.css" />
+    <link rel="stylesheet" media="screen" href="./styles/css/dark.css" />
+</head>
+<body>    
+    <!-- <aside class="sidebar draggable">
+
+        <div class="tabbed-area">
+
+            <nav class="tabs">
+                
+                <a href="#box-one" class="active">Tabs Generator</a>
+                <a href="#box-two">Virtual Instrument</a>
+                <a href="#box-three">Preference</a>
+
+            </nav>
+
+            <section class="box-wrap">
+            
+                <div id="box-one" class="active">
+                    <div class="settings">
+                        <button class="btn #testadd" title="New Staff" id="tabs-generator_new-staff">Create a new staff</button>
+                        <button class="btn #testclear" title="Clear" id="tabs-generator_clear">Clear selected staff</button>
+                        <button class="btn #testdelete" title="Delete" id="tabs-generator_delete">Delete selected staff</button>
+                        <button class="btn #testreset" title="Reset" id="tabs-generator_reset">Reset Workspace</button>
+                        <div class="dropdown" data-type="number">
+                            <label>Selected Staff</label>
+                            <select id="staff-selector"></select>
+                            <button class="btn #testseparator" title="New Bar" id="tabs-generator_bar">Add a line separator</button>
+                        </div>
+                        <div class="textarea">
+                            <label>Text Content</label>
+                            <textarea id="generator_lyrics" placeholder="Write your content here..." spellcheck="false"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="box-two">
+                    <div class="dropdown" data-type="text">
+                        <select id="instrument-selector"><option value="guitar">guitar</option><option value="ukulele">ukulele</option></select>
+                    </div>
+                    <div class="switch" checked="">
+                        <label for="switch">tabs seq</label>
+                        <span id="tabs-seq-screen-2">0</span>
+                        <label for="switch">:</label>
+                        <nav class="nav" data-value="viewTabs"></nav>
+                    </div>
+                    <div id="tab-sequence" class="pager">
+                        <button title="Show all tabs" id="tab-seq-all" class="w-m">show all</button>
+                        <content id="tabs-seq-screen-1" class="pager-screen w-s">all</content>
+                        <button title="Previous" id="tab-seq-prev" class="#testleft">Previous</button>
+                        <button title="Next" id="tab-seq-next" class="#testright">Next</button>
+                        <button title="Edit" id="tab-seq-edit" class="#testedit" hidden="">Edit</button>
+                        <button title="Delete" id="tab-seq-delete" class="#testdelete" hidden="">Delete</button>
+                        <button title="Save" id="tab-seq-save" class="#testsave" hidden="">Save</button>
+                        <button title="Back" id="tab-seq-back" class="#testback" hidden="">Back</button>
+                    </div>
+                    <div class="switch">
+                        <label for="switch">notes</label>
+                        <nav class="nav" data-value="viewNotes"></nav>
+                    </div>
+                </div>
+                
+                <div id="box-three">
+                    <div class="switch">
+                        <label for="switch">Dark theme</label>
+                        <nav class="nav" data-value="dark-theme"></nav>
+                    </div>
+                </div>
+            </section>
+        
+        </div>
+    </aside> -->
+    
+    <aside class="sidebar panel-left mousescroll">
+        <a href="https://omusiclab-landingpage.vercel.app/"><img src="./favicon.svg" alt="oMusic Laboratory" class="site-logo"></a>
+        <div class="nav-panel">
+            <label for="nav-panel">Workspace</label>
+            <ul data-value="workspace">
+                <li class=""><div class="dropdown" data-type="number">
+                    <label for="dropdown">Selected Tab</label>
+                    <select id="staff-selector"></select>
+                </div></li>
+                <li>
+                    <div class="textarea">
+                        <label for="textarea">Lyrics</label>
+                        <textarea class="mousescroll" id="generator_lyrics" placeholder="Write something here.." spellcheck="false"></textarea>
+                    </div>
+                </li>
+                <li class="btn #testseparator" title="New Bar" id="tabs-generator_bar">Add a bar</li>
+                <li class="btn" title="Create a new tab" id="tabs-generator_new-staff">Create a new tab</li>
+                <li class="btn" title="Clear selected tab" id="tabs-generator_clear">Clear selected tab</li>
+                <li class="btn" title="Delete selected tab" id="tabs-generator_delete">Delete selected tab</li>
+                <li class="btn" title="Reset Workspace" id="tabs-generator_reset">Reset Workspace</li>
+            </ul>
+        </div>
+        <div class="nav-panel">
+            <label for="nav-panel">Preference</label>
+            <ul data-value="preference">
+                <li>
+                    <div class="dropdown" data-type="text">
+                        <label for="dropdown">Instrument</label>
+                        <select id="instrument-selector"><option value="guitar">guitar</option><option value="ukulele">ukulele</option></select>
+                    </div>
+                    <div class="switch">
+                        <label for="switch">show notes</label>
+                        <nav class="nav" data-value="viewNotes"></nav>
+                    </div>
+                    <div class="switch">
+                        <label for="switch">Dark theme</label>
+                        <nav id="dark-theme" class="nav" data-value="dark-theme"></nav>
+                    </div>
+                    <!-- <div class="switch" checked="checked">
+                        <label for="switch">Animation</label>
+                        <nav class="nav" data-value="animation"></nav>
+                    </div> -->
+                </li>
+            </ul>
+        </div>
+        <div class="nav-panel">
+            <label for="nav-panel" style="font-size: .75em; margin-top: 3em;">© 2020 oMusic Tabs Generator - v.2.0.0</label>
+        </div>
+    </aside>
+
+    <div class="panel-right">
+
+        <!-- <header id="header-container">
+            <strong>Tabs Generator Module: </strong>
+        </header> -->
+
+        <div id="inst">
+            <div id="alert-container"></div>
+            <ul class="settings" style="display: none;">
+                <li><strong>Powered by: </strong><span>oMusic tabs generator JS library</span></li>
+                <li class="switch" checked="">
+                    <label for="switch">tabs seq</label>
+                    <span id="tabs-seq-screen-2">0</span>
+                    <label for="switch">:</label>
+                    <nav class="nav" data-value="viewTabs"></nav>
+                </li>
+                <li id="tab-sequence" class="pager">
+                    <button title="Show all tabs" id="tab-seq-all" class="w-m">show all</button>
+                    <content id="tabs-seq-screen-1" class="pager-screen w-s">all</content>
+                    <button title="Previous" id="tab-seq-prev" class="#testleft">Previous</button>
+                    <button title="Next" id="tab-seq-next" class="#testright">Next</button>
+                    <button title="Edit" id="tab-seq-edit" class="#testedit" hidden="">Edit</button>
+                    <button title="Delete" id="tab-seq-delete" class="#testdelete" hidden="">Delete</button>
+                    <button title="Save" id="tab-seq-save" class="#testsave" hidden="">Save</button>
+                    <button title="Back" id="tab-seq-back" class="#testback" hidden="">Back</button>
+                </li>
+            </ul>
+        </div>
+
+        <section id="body-container" class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <pre id="content" class="copy" data-copy="tabs-generator"></pre>
+                </div>
+            </div>
+        </section>
+        <footer>
+            <p>Powered by <strong>oMusic JS Library</strong></p>
+        </footer>
+    </div>
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
+    <!-- <script type="text/javascript" src="./node_modules/bootstrap/js/bootstrap.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script> -->
+
+    <script type="text/javascript" src="./library/jquery/1.8.2/jquery.min.js?v=2.0.0"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="./styles/js/tabs/tabs.js?v=2.0.0"></script>
+    <script type="text/javascript" src="./styles/js/tabs/generate.js?v=2.0.0"></script>
+    <script type="text/javascript" src="./styles/js/script.js?v=2.0.0"></script>
+    <script type="text/javascript" src="./styles/css/tabs/style.js?v=2.0.0"></script>
+    <script type="text/javascript" src="./styles/js/components.js?v=2.0.0"></script>
+
+    
+</body>
+</html>

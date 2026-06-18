@@ -125,9 +125,9 @@ body.tuner-view-advanced .simple-only {
   background: linear-gradient(
     90deg,
     rgba(51, 51, 51, 0.08) 0%,
-    rgba(16, 99, 71, 0.2) 48%,
-    rgba(16, 99, 71, 0.28) 50%,
-    rgba(16, 99, 71, 0.2) 52%,
+    var(--oml-accent-meter) 48%,
+    var(--oml-accent-meter-strong) 50%,
+    var(--oml-accent-meter) 52%,
     rgba(51, 51, 51, 0.08) 100%
   );
   border-radius: 999px;
@@ -223,8 +223,8 @@ select#instrument-select {
 }
 
 .string-option input:checked + label {
-  border-color: rgba(16, 99, 71, 0.45);
-  background: rgba(16, 99, 71, 0.06);
+  border-color: var(--oml-accent-ring);
+  background: var(--oml-accent-soft-bg);
 }
 
 .string-option label:hover {

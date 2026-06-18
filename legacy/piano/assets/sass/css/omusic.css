@@ -1,0 +1,274 @@
+/* Extends / Inheritance */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Baloo+Bhai+2&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+.om-nav.navbar .om-site-title, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  background-color: #fafafa;
+  font-size: 16px;
+  line-height: 1.5em;
+}
+body .preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #fefefe;
+  z-index: 100000;
+  height: 100%;
+  width: 100%;
+  overflow: hidden !important;
+  text-align: center;
+}
+body .preloader .status {
+  height: 50%;
+  width: 100%;
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+}
+body .preloader .status img {
+  display: grid;
+  height: 100px;
+  width: auto;
+  height: auto;
+  margin: auto;
+  max-width: 300px;
+}
+body .preloader .status img:last-child {
+  -webkit-filter: grayscale(100%);
+  /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+body pre {
+  /* font-family: 'Baloo Bhai 2', cursive; */
+  text-align: left;
+}
+body pre kbd {
+  background-color: #131313;
+  color: #fafafa;
+  padding: 3px 7px;
+  border-radius: 3px;
+  font-size: 75%;
+}
+body h1, body h2, body h3, body h4, body h5, body h6 {
+  font-family: "Montserrat Alternates", sans-serif;
+}
+body a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+body a:visited {
+  color: rgba(255, 255, 255, 0.8);
+}
+body a:hover, body a:focus, body a:active {
+  color: white;
+  background-color: none;
+}
+
+/* PRELOADER */
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #fefefe;
+  z-index: 100000;
+  height: 100%;
+  width: 100%;
+  overflow: hidden !important;
+  text-align: center;
+}
+
+.preloader .status {
+  height: 50%;
+  width: 100%;
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+}
+
+.preloader .status img {
+  display: grid;
+  height: 100px;
+  width: auto;
+  height: auto;
+  margin: auto;
+  max-width: 300px;
+}
+
+.preloader .status img:last-child {
+  -webkit-filter: grayscale(100%);
+  /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+
+/* Virtual Instrument */
+.virtual-instrument {
+  width: 100%;
+  height: 100%;
+  margin: auto;
+}
+.virtual-instrument > * {
+  position: relative;
+  margin: auto;
+}
+
+/* Debugger */
+#debugger {
+  text-align: center;
+}
+
+.dropdown {
+  display: inline-block;
+  margin-bottom: 14px;
+  border-radius: 5px;
+  border: solid 3px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.1);
+  min-width: 268px;
+}
+.dropdown > * {
+  padding: 14px;
+  line-height: 32px;
+  border: none;
+}
+.dropdown label {
+  margin: 0;
+  font-size: 12px;
+  border-right: none;
+  font-weight: 800;
+  text-transform: uppercase;
+  float: left;
+  line-height: 20px;
+}
+.dropdown select {
+  background-color: #fafafa;
+  margin: 0;
+  font-size: 100%;
+  border-left: none;
+  float: right;
+  min-width: 170px;
+}
+
+.silent {
+  opacity: 0.5;
+}
+
+/* Mobile Only */
+@media only screen and (max-width: 768px) {
+  #catalog-chord option:first-child {
+    content: "asff";
+  }
+}
+button, button:active, button:visited {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 1vh;
+  padding: 2vh 3vh;
+  font-size: 100%;
+  cursor: pointer;
+  transition: 0.1s;
+  -webkit-transition: 0.1s;
+  -moz-transition: 0.1s;
+  -o-transition: 0.1s;
+}
+button:hover, button:focus {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fafafa;
+}
+
+/* oMusic Stylesheet */
+.om-nav.navbar {
+  background-color: #354041;
+  padding: 3vh 15vh;
+  text-align: center;
+  color: #fafafa;
+}
+.om-container {
+  max-width: 1080px;
+  padding: 5vh 10vh;
+  margin: auto;
+}
+.om-container.full {
+  max-width: unset;
+}
+.om-container.large {
+  max-width: 1300px;
+}
+.om-container.small {
+  max-width: 500px;
+}
+
+.om-list {
+  display: block;
+  list-style: none;
+  border: solid 3px rgba(0, 0, 0, 0.1);
+  padding: 14px 17px;
+  border-radius: 5px;
+  text-align: left;
+}
+.om-list li label {
+  color: #538c65;
+}
+
+#om-header {
+  display: grid;
+  background-color: #efefef;
+  padding: 2%;
+  min-height: 230px;
+}
+
+#om-body {
+  text-align: center;
+  padding-bottom: 50px;
+  display: table;
+  width: 100%;
+}
+
+#om-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #232a2b;
+  font-size: 80%;
+  padding: 12px 0;
+  text-indent: 0;
+  padding: 12px 0;
+  font-size: 90%;
+}
+#om-footer span {
+  color: rgba(255, 255, 255, 0.8);
+  opacity: 0.5;
+}
+
+/* Desktop Only */
+/* Mobile Only */
+@media only screen and (max-width: 768px) {
+  .om-container {
+    padding: 1vh 2vh;
+  }
+
+  .om-list {
+    display: none;
+  }
+
+  #om-header {
+    padding: 12% 0;
+    margin-bottom: 20px;
+    min-height: unset;
+  }
+
+  #om-footer {
+    font-size: 60%;
+  }
+}
+
+/*# sourceMappingURL=omusic.css.map */
