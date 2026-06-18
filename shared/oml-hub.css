@@ -216,6 +216,35 @@ body.oml-has-hub {
   color: var(--oml-muted);
 }
 
+.oml-hub-link--external {
+  justify-content: space-between;
+}
+
+.oml-hub-external-icon {
+  flex-shrink: 0;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-left: auto;
+  opacity: 0.72;
+}
+
+.oml-hub-link--external:hover .oml-hub-external-icon,
+.oml-hub-link--external[aria-current="page"] .oml-hub-external-icon {
+  opacity: 1;
+}
+
+.oml-hub-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .oml-hub-link,
 .oml-hub-nav-btn {
   display: flex;

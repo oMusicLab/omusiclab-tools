@@ -3,6 +3,16 @@
 
   var OML_LANDING_URL = "https://omusiclab-landingpage.vercel.app/";
 
+  var EXTERNAL_ICON_SVG =
+    '<svg class="oml-hub-external-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>' +
+    '<polyline points="15 3 21 3 21 9"/>' +
+    '<line x1="10" y1="14" x2="21" y2="3"/>' +
+    "</svg>";
+
+  var CHORD_DIAGRAM_LEGACY_URL =
+    "https://musictools.chiedimla.com/chord-diagram-generator/";
+
   var CHEVRON_SVG =
     '<svg class="oml-hub-disclosure-chevron" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
 
@@ -67,7 +77,9 @@
     {
       id: "chord-diagram",
       name: "Chord Diagram Generator",
-      href: "legacy/chord-diagram-generator/",
+      href: CHORD_DIAGRAM_LEGACY_URL,
+      external: true,
+      legacyPath: "legacy/chord-diagram-generator/",
     },
     {
       id: "scale-generator",
@@ -116,6 +128,14 @@
     return new URL(href, base).pathname;
   }
 
+  function itemLocalPath(base, item) {
+    if (item.external) {
+      if (!item.legacyPath) return null;
+      return normalizePath(new URL(item.legacyPath, base).pathname);
+    }
+    return normalizePath(resolveHref(base, item.href));
+  }
+
   function getCurrentToolId(base) {
     var current = normalizePath(global.location.pathname);
     var homePath = normalizePath(new URL("./", base).pathname);
@@ -138,8 +158,8 @@
 
     for (i = 0; i < LEGACY_ITEMS.length; i++) {
       item = LEGACY_ITEMS[i];
-      path = normalizePath(resolveHref(base, item.href));
-      if (current === path || current.indexOf(path) === 0) return item.id;
+      path = itemLocalPath(base, item);
+      if (path && (current === path || current.indexOf(path) === 0)) return item.id;
     }
 
     return null;
@@ -150,8 +170,8 @@
     var i;
     var path;
     for (i = 0; i < LEGACY_ITEMS.length; i++) {
-      path = normalizePath(resolveHref(base, LEGACY_ITEMS[i].href));
-      if (current === path || current.indexOf(path) === 0) return true;
+      path = itemLocalPath(base, LEGACY_ITEMS[i]);
+      if (path && (current === path || current.indexOf(path) === 0)) return true;
     }
     return false;
   }
@@ -164,10 +184,19 @@
   }
 
   function buildNavLink(base, item, activeId) {
-    var link = el("a", "oml-hub-link");
-    link.href = new URL(item.href, base).pathname;
-    var label = el("span", null, item.name);
-    link.appendChild(label);
+    var link = el("a", item.external ? "oml-hub-link oml-hub-link--external" : "oml-hub-link");
+    if (item.external) {
+      link.href = item.href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+    } else {
+      link.href = new URL(item.href, base).pathname;
+    }
+    link.appendChild(el("span", null, item.name));
+    if (item.external) {
+      link.insertAdjacentHTML("beforeend", EXTERNAL_ICON_SVG);
+      link.appendChild(el("span", "oml-hub-visually-hidden", " (opens in new tab)"));
+    }
     if (activeId === item.id) {
       link.setAttribute("aria-current", "page");
     }
