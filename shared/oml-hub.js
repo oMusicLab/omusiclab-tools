@@ -2,7 +2,6 @@
   "use strict";
 
   var OML_LANDING_URL = "https://omusiclab-landingpage.vercel.app/";
-  var STORAGE_KEY = "oml-hub-sidebar-collapsed";
   var HISTORY_STATE_KEY = "omlPath";
 
   var EXTERNAL_ICON_SVG =
@@ -17,19 +16,6 @@
 
   var CHEVRON_SVG =
     '<svg class="oml-hub-disclosure-chevron" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
-
-  var SIDEBAR_TOGGLE_ICON =
-    '<svg class="oml-hub-sidebar-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-    '<rect class="oml-hub-sidebar-toggle-frame" x="3" y="4" width="18" height="16" rx="2.25"/>' +
-    '<rect class="oml-hub-sidebar-toggle-fill" x="4" y="5" width="5.5" height="14" rx="1.25"/>' +
-    '<path class="oml-hub-sidebar-toggle-rail" d="M9.5 4v16"/>' +
-    '<g class="oml-hub-sidebar-toggle-chevron-wrap">' +
-    '<path class="oml-hub-sidebar-toggle-chevron" d="M12.25 9.25 10.25 12l2 2.75"/>' +
-    "</g>" +
-    "</svg>";
-
-  var MENU_ICON_SVG =
-    '<svg class="oml-hub-menu-icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
 
   var SHARED_STYLE_MARKERS = ["omusiclab-theme.css", "oml-hub.css"];
   var SHARED_SCRIPT_MARKERS = [
@@ -207,7 +193,7 @@
     return false;
   }
 
-  function isSpaPath(base, pathname) {
+  function isModernSpaPath(base, pathname) {
     var current = normalizePath(pathname);
     var homePath = normalizePath(new URL("./", base).pathname);
     if (current === homePath) return true;
@@ -222,6 +208,28 @@
       }
     }
     return false;
+  }
+
+  function isLegacyIframePath(base, pathname) {
+    var current = normalizePath(pathname);
+    var i;
+    var item;
+    var path;
+    for (i = 0; i < LEGACY_ITEMS.length; i++) {
+      item = LEGACY_ITEMS[i];
+      if (item.external) continue;
+      path = normalizePath(resolveHref(base, item.href));
+      if (current === path || current.indexOf(path) === 0) return true;
+    }
+    return false;
+  }
+
+  function isRoutablePath(base, pathname) {
+    return isModernSpaPath(base, pathname) || isLegacyIframePath(base, pathname);
+  }
+
+  function setLegacyIframeMode(shell, enabled) {
+    shell.classList.toggle("oml-hub-shell--legacy-iframe", enabled);
   }
 
   function isSharedAsset(href, markers) {
@@ -239,15 +247,13 @@
     return node;
   }
 
-  function initSidebarToggleIcon(btn) {
-    if (!btn.querySelector(".oml-hub-sidebar-toggle-icon")) {
-      btn.innerHTML = SIDEBAR_TOGGLE_ICON;
-    }
-  }
-
-  function setSidebarToggleIcon(btn, collapsed) {
-    initSidebarToggleIcon(btn);
-    btn.classList.toggle("oml-hub-sidebar-toggle--collapsed", collapsed);
+  function buildMenuIcon() {
+    var wrap = el("span", "oml-hub-menu-icon");
+    wrap.setAttribute("aria-hidden", "true");
+    wrap.appendChild(el("span", "oml-hub-menu-bar"));
+    wrap.appendChild(el("span", "oml-hub-menu-bar"));
+    wrap.appendChild(el("span", "oml-hub-menu-bar"));
+    return wrap;
   }
 
   function buildNavLink(base, item, activeId) {
@@ -273,8 +279,9 @@
   }
 
   function buildSidebar(base, activeId) {
-    var sidebar = el("aside", "oml-hub-sidebar");
+    var sidebar = el("aside", "oml-hub-sidebar oml-hub-nav-panel");
     sidebar.setAttribute("aria-label", "Tools navigation");
+    sidebar.setAttribute("aria-hidden", "true");
 
     var head = el("div", "oml-hub-sidebar-head");
     var brandWrap = el("div", "oml-hub-sidebar-brand");
@@ -288,16 +295,11 @@
     brandWrap.appendChild(brand);
     head.appendChild(brandWrap);
 
-    var collapseBtn = el("button", "oml-hub-icon-btn oml-hub-sidebar-toggle");
-    collapseBtn.type = "button";
-    collapseBtn.setAttribute("aria-label", "Collapse sidebar");
-    initSidebarToggleIcon(collapseBtn);
-    head.appendChild(collapseBtn);
-
     var closeBtn = el("button", "oml-hub-icon-btn oml-hub-drawer-close");
     closeBtn.type = "button";
     closeBtn.setAttribute("aria-label", "Close menu");
-    closeBtn.innerHTML = "&times;";
+    closeBtn.innerHTML =
+      '<span class="oml-hub-close-icon" aria-hidden="true"><span></span><span></span></span>';
     head.appendChild(closeBtn);
 
     sidebar.appendChild(head);
@@ -366,7 +368,7 @@
       if (chev) chev.classList.toggle("is-open", open);
     });
 
-    return { sidebar: sidebar, collapseBtn: collapseBtn, closeBtn: closeBtn };
+    return { sidebar: sidebar, closeBtn: closeBtn };
   }
 
   function buildMobileHeader(activeId) {
@@ -376,7 +378,7 @@
     menuBtn.setAttribute("aria-label", "Open tools menu");
     menuBtn.setAttribute("aria-expanded", "false");
     menuBtn.setAttribute("aria-controls", "oml-hub-sidebar");
-    menuBtn.innerHTML = MENU_ICON_SVG;
+    menuBtn.appendChild(buildMenuIcon());
 
     var title = el("h1", "oml-hub-mobile-title", getToolLabel(activeId || "home"));
 
@@ -413,23 +415,18 @@
     return nav;
   }
 
-  function setCollapsed(shell, sidebar, collapseBtn, collapsed) {
-    shell.classList.toggle("oml-hub-shell--sidebar-collapsed", collapsed);
-    sidebar.setAttribute("aria-expanded", collapsed ? "false" : "true");
-    collapseBtn.setAttribute(
-      "aria-label",
-      collapsed ? "Expand sidebar" : "Collapse sidebar"
-    );
-    setSidebarToggleIcon(collapseBtn, collapsed);
-    try {
-      global.localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0");
-    } catch (e) {}
-  }
-
-  function setMobileNavOpen(shell, menuBtn, open) {
+  function setMobileNavOpen(shell, menuBtn, sidebar, open) {
     shell.classList.toggle("oml-hub-shell--nav-open", open);
     if (menuBtn) {
       menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      menuBtn.setAttribute(
+        "aria-label",
+        open ? "Close tools menu" : "Open tools menu"
+      );
+      menuBtn.classList.toggle("oml-hub-menu-btn--open", open);
+    }
+    if (sidebar) {
+      sidebar.setAttribute("aria-hidden", open ? "false" : "true");
     }
     global.document.body.classList.toggle("oml-hub-nav-open", open);
   }
@@ -602,13 +599,13 @@
       var path = canonicalPath(pathname);
       var homePath = canonicalPath(new URL("./", base).pathname);
 
-      if (!isSpaPath(base, path)) {
+      if (!isRoutablePath(base, path)) {
         global.location.href = new URL(pathname, base).href;
         return global.Promise.resolve();
       }
 
       if (path === currentPath && !options.force) {
-        setMobileNavOpen(ctx.shell, ctx.menuBtn, false);
+        setMobileNavOpen(ctx.shell, ctx.menuBtn, ctx.sidebar, false);
         return global.Promise.resolve();
       }
 
@@ -617,7 +614,14 @@
       ctx.shell.classList.add("oml-hub-shell--loading");
 
       var activeId = getToolIdForPath(base, path) || "home";
-      var task = path === homePath ? showHome() : loadToolPage(path);
+      var task;
+      if (path === homePath) {
+        task = showHome();
+      } else if (isLegacyIframePath(base, path)) {
+        task = loadLegacyIframe(path, activeId);
+      } else {
+        task = loadToolPage(path);
+      }
 
       return task
         .then(function () {
@@ -633,7 +637,7 @@
           }
 
           updateActiveNav(activeId, ctx);
-          setMobileNavOpen(ctx.shell, ctx.menuBtn, false);
+          setMobileNavOpen(ctx.shell, ctx.menuBtn, ctx.sidebar, false);
           global.scrollTo(0, 0);
         })
         .catch(function () {
@@ -647,6 +651,7 @@
 
     function showHome() {
       clearToolAssets();
+      setLegacyIframeMode(ctx.shell, false);
       syncBodyClasses(null, true);
       renderHomeContent(base);
       global.document.title = "omusiclab tools";
@@ -657,6 +662,49 @@
           'Part of <a href="https://omusiclab-landingpage.vercel.app/">omusiclab</a>';
       }
       return global.Promise.resolve();
+    }
+
+    function loadLegacyIframe(path, activeId) {
+      clearToolAssets();
+      setLegacyIframeMode(ctx.shell, true);
+      syncBodyClasses(null, false);
+
+      var main = global.document.getElementById("body-container");
+      if (!main) return global.Promise.reject(new Error("missing body-container"));
+
+      main.removeAttribute("data-oml-hub-rendered");
+      main.className = "oml-hub-legacy-viewport oml-hub-legacy-viewport--loading";
+      main.innerHTML = "";
+
+      var loading = el("div", "oml-hub-legacy-loading");
+      loading.setAttribute("aria-live", "polite");
+      loading.setAttribute("aria-busy", "true");
+      loading.appendChild(el("div", "oml-hub-legacy-spinner"));
+      loading.appendChild(el("p", "oml-hub-legacy-loading-label", "Loading tool…"));
+      main.appendChild(loading);
+
+      var iframe = el("iframe", "oml-hub-legacy-frame oml-hub-legacy-frame--loading");
+      iframe.title = getToolLabel(activeId);
+      main.appendChild(iframe);
+
+      global.document.title = "omusiclab | " + getToolLabel(activeId);
+
+      return new global.Promise(function (resolve) {
+        var settled = false;
+        function finish() {
+          if (settled) return;
+          settled = true;
+          main.classList.remove("oml-hub-legacy-viewport--loading");
+          iframe.classList.remove("oml-hub-legacy-frame--loading");
+          loading.setAttribute("aria-busy", "false");
+          if (loading.parentNode) loading.parentNode.removeChild(loading);
+          resolve();
+        }
+
+        iframe.addEventListener("load", finish);
+        iframe.addEventListener("error", finish);
+        iframe.src = new URL(path, base).href;
+      });
     }
 
     function loadToolPage(path) {
@@ -673,6 +721,7 @@
           if (!main) throw new Error("missing body-container");
 
           clearToolAssets();
+          setLegacyIframeMode(ctx.shell, false);
           syncBodyClasses(doc, false);
           loadToolStyles(doc, fetchUrl);
 
@@ -721,7 +770,7 @@
       if (!href) return;
 
       var path = canonicalPath(new URL(href, base).pathname);
-      if (!isSpaPath(base, path)) return;
+      if (!isRoutablePath(base, path)) return;
 
       event.preventDefault();
       navigate(path);
@@ -825,36 +874,35 @@
       shell: shell,
       menuBtn: mobile.menuBtn,
       titleEl: mobile.titleEl,
+      sidebar: built.sidebar,
     };
 
     router = createRouter(base, ctx);
 
-    var collapsed = false;
-    try {
-      collapsed = global.localStorage.getItem(STORAGE_KEY) === "1";
-    } catch (e) {}
-    setCollapsed(shell, built.sidebar, built.collapseBtn, collapsed);
-
-    built.collapseBtn.addEventListener("click", function () {
-      setCollapsed(
-        shell,
-        built.sidebar,
-        built.collapseBtn,
-        !shell.classList.contains("oml-hub-shell--sidebar-collapsed")
-      );
-    });
-
     function openDrawer() {
-      setMobileNavOpen(shell, mobile.menuBtn, true);
+      setMobileNavOpen(shell, mobile.menuBtn, built.sidebar, true);
     }
 
     function closeDrawer() {
-      setMobileNavOpen(shell, mobile.menuBtn, false);
+      setMobileNavOpen(shell, mobile.menuBtn, built.sidebar, false);
     }
 
-    mobile.menuBtn.addEventListener("click", openDrawer);
+    mobile.menuBtn.addEventListener("click", function () {
+      if (shell.classList.contains("oml-hub-shell--nav-open")) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    });
     built.closeBtn.addEventListener("click", closeDrawer);
     backdrop.addEventListener("click", closeDrawer);
+
+    global.document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape" || !shell.classList.contains("oml-hub-shell--nav-open")) {
+        return;
+      }
+      closeDrawer();
+    });
 
     bottomNav.addEventListener("click", function (event) {
       var tab = event.target.closest(".oml-hub-bottom-tab");
