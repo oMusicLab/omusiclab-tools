@@ -5,16 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>omusiclab | Chord Transposer</title>
     <link rel="icon" type="image/svg+xml" href="../shared/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap"
+    />
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="../shared/oml-hub.css" />
-    <script src="../shared/oml-embed.js"></script>
+    <script defer src="../shared/oml-embed.js"></script>
   </head>
   <body class="transpose-view-simple transpose-simple-keys">
 <main id="body-container" class="container-fluid">
       <h1 class="tool-title text-center">Chord Transposer</h1>
 <p class="subtle text-center advanced-only">
         Pick a chord-detection engine below. The OML library ships with this site;
-        <a href="https://github.com/Open-SL/Chords-Transposer" rel="noopener noreferrer">chords-transposer</a> can help
+        <a href="https://github.com/Open-SL/Chords-Transposer" target="_blank" rel="noopener noreferrer">chords-transposer</a> can help
         on chord-only lines. Extensions after the root stay unchanged (maj9, m7b5, sus4/Eb, …).
       </p>
       <p class="subtle text-center simple-only">
@@ -49,7 +55,7 @@
           <label class="view-mode-option">
             <input type="radio" name="transpose-engine" value="vendor" />
             <span class="simple-only">Open-SL</span>
-            <span class="advanced-only"><a href="https://github.com/Open-SL/Chords-Transposer" rel="noopener noreferrer"></a>chords-transposer (Open-SL)</a></span>
+            <span class="advanced-only"><a href="https://github.com/Open-SL/Chords-Transposer" target="_blank" rel="noopener noreferrer">chords-transposer (Open-SL)</a></span>
           </label>
         </div>
       </fieldset>
@@ -118,8 +124,9 @@
       </p>
     </footer>
 
-    <script src="../shared/oml-logo-mark.js"></script>
-    <script src="../shared/oml-hub.js"></script>
+    <script defer src="../shared/oml-external-links.js"></script>
+    <script defer src="../shared/oml-logo-mark.js"></script>
+    <script defer src="../shared/oml-hub.js"></script>
     <script src="../shared/oml-chord-transpose.js"></script>
     <script src="./engines/chords-transposer.min.js"></script>
     <script src="./engines/vendor-engine.js"></script>

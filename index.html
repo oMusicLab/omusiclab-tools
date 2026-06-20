@@ -12,22 +12,23 @@
     <link rel="icon" type="image/svg+xml" href="./shared/favicon.svg" />
     <link rel="apple-touch-icon" href="./shared/favicon.svg" />
     <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap"
+    />
     <link rel="stylesheet" href="./shared/omusiclab-theme.css" />
     <link rel="stylesheet" href="./shared/oml-hub.css" />
-    <script>
-      // Check if the user is visiting via the vercel.app URL
-      if (window.location.hostname.endsWith('.vercel.app')) {
-        // Attempt to ping your custom domain silently
-        fetch('https://tools.omusiclab.com', { mode: 'no-cors' })
-          .then(() => {
-            // If successful, redirect to the custom domain
-            window.location.replace('https://tools.omusiclab.com' + window.location.pathname);
+    <script defer>
+      if (window.location.hostname.endsWith(".vercel.app")) {
+        fetch("https://tools.omusiclab.com", { mode: "no-cors" })
+          .then(function () {
+            window.location.replace(
+              "https://tools.omusiclab.com" + window.location.pathname
+            );
           })
-          .catch(() => {
-            // If the custom domain is expired/dead, do nothing 
-            // The user stays safely on the vercel.app URL
-            console.log('Custom domain unavailable, staying on vercel.app');
-          });
+          .catch(function () {});
       }
     </script>
   </head>
@@ -36,11 +37,12 @@
 
     <footer>
       <p>
-        Part of <a href="https://omusiclab-landingpage.vercel.app/">omusiclab</a>
+        Part of <a href="https://omusiclab-landingpage.vercel.app/" target="_blank" rel="noopener noreferrer">omusiclab</a>
       </p>
     </footer>
 
-    <script src="./shared/oml-logo-mark.js"></script>
-    <script src="./shared/oml-hub.js"></script>
+    <script defer src="./shared/oml-external-links.js"></script>
+    <script defer src="./shared/oml-logo-mark.js"></script>
+    <script defer src="./shared/oml-hub.js"></script>
   </body>
 </html>

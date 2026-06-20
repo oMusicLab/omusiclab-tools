@@ -3,20 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      http-equiv="refresh"
-      content="0; url=https://musictools.chiedimla.com/chord-diagram-generator/"
-    />
-    <link rel="canonical" href="https://musictools.chiedimla.com/chord-diagram-generator/" />
     <link rel="icon" type="image/svg+xml" href="../../shared/favicon.svg" />
     <title>Redirecting to Chord Diagram Generator…</title>
     <script>
-      location.replace("https://musictools.chiedimla.com/chord-diagram-generator/");
+      if (window.top === window.self) {
+        location.replace(new URL("../../", location.href).href);
+      } else {
+        location.replace("https://musictools.chiedimla.com/chord-diagram-generator/");
+      }
     </script>
   </head>
   <body>
     <p>
-      <a href="https://musictools.chiedimla.com/chord-diagram-generator/"
+      <a href="https://musictools.chiedimla.com/chord-diagram-generator/" target="_blank" rel="noopener noreferrer"
         >Continue to Chord Diagram Generator</a
       >
     </p>

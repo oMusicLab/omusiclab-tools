@@ -3,6 +3,11 @@
 
   var OML_LANDING_URL = "https://omusiclab-landingpage.vercel.app/";
   var HISTORY_STATE_KEY = "omlPath";
+  var ROUTE_STORAGE_KEY = "oml_last_path";
+  var OML_FOOTER_EXTERNAL_HTML =
+    'Part of <a href="' +
+    OML_LANDING_URL +
+    '" target="_blank" rel="noopener noreferrer">omusiclab</a>';
 
   var EXTERNAL_ICON_SVG =
     '<svg class="oml-hub-external-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -23,6 +28,7 @@
     "oml-hub.js",
     "oml-embed.js",
     "oml-embed-snippet.js",
+    "oml-external-links.js",
   ];
 
   var CATEGORIES = [
@@ -95,22 +101,33 @@
     { id: "home", label: "Home", href: "./" },
     { id: "metronome", label: "Metronome", href: "virtual-metronome/" },
     { id: "tuner", label: "Tuner", href: "virtual-tuner/" },
-    { id: "chord-transposer", label: "Chords", href: "virtual-chord-transposer/" },
+    { id: "chord-transposer", label: "Transposer", href: "virtual-chord-transposer/" },
     { id: "more", label: "More", action: "menu" },
   ];
 
   var router = null;
+  var cachedScriptBase = null;
+  var toolPageCache = Object.create(null);
+  var prefetchedPaths = Object.create(null);
 
   function isEmbedMode() {
     return global.OMLEmbed && global.OMLEmbed.isEmbedMode();
   }
 
   function getScriptBase() {
+    if (cachedScriptBase) return cachedScriptBase;
     var scripts = global.document.querySelectorAll('script[src*="oml-hub.js"]');
-    if (!scripts.length) return "./";
+    if (!scripts.length) {
+      cachedScriptBase = "./";
+      return cachedScriptBase;
+    }
     var src = scripts[scripts.length - 1].getAttribute("src") || "";
     var resolved = new URL(src, global.location.href);
-    return resolved.href.slice(0, resolved.href.lastIndexOf("shared/oml-hub.js"));
+    cachedScriptBase = resolved.href.slice(
+      0,
+      resolved.href.lastIndexOf("shared/oml-hub.js")
+    );
+    return cachedScriptBase;
   }
 
   function normalizePath(pathname) {
@@ -228,6 +245,75 @@
     return isModernSpaPath(base, pathname) || isLegacyIframePath(base, pathname);
   }
 
+  function isHubRootDocument(base) {
+    var homePath = normalizePath(new URL("./", base).pathname);
+    return normalizePath(global.location.pathname) === homePath;
+  }
+
+  function historyUrlForPath(base, path) {
+    var homePath = normalizePath(new URL("./", base).pathname);
+    var routePath = normalizePath(path);
+    if (routePath === homePath || isLegacyIframePath(base, routePath)) {
+      return homePath;
+    }
+    return routePath;
+  }
+
+  function readStoredRoute(base) {
+    try {
+      var stored = global.sessionStorage.getItem(ROUTE_STORAGE_KEY);
+      if (stored) {
+        return normalizePath(new URL(stored, base).pathname);
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function persistRoute(base, path) {
+    try {
+      var homePath = normalizePath(new URL("./", base).pathname);
+      if (normalizePath(path) === homePath) {
+        global.sessionStorage.removeItem(ROUTE_STORAGE_KEY);
+      } else {
+        global.sessionStorage.setItem(ROUTE_STORAGE_KEY, normalizePath(path));
+      }
+    } catch (e) {}
+  }
+
+  function readBootstrapPath(base) {
+    var homePath = normalizePath(new URL("./", base).pathname);
+    var pathname = normalizePath(global.location.pathname);
+
+    if (global.history.state && global.history.state[HISTORY_STATE_KEY]) {
+      try {
+        return normalizePath(new URL(global.history.state[HISTORY_STATE_KEY], base).pathname);
+      } catch (e) {}
+    }
+
+    var storedPath = readStoredRoute(base);
+    if (storedPath) return storedPath;
+
+    var params = new URLSearchParams(global.location.search);
+    var omlPathParam = params.get("oml_path");
+    if (omlPathParam) {
+      try {
+        return normalizePath(new URL(omlPathParam, base).pathname);
+      } catch (e) {}
+    }
+
+    if (isHubRootDocument(base) && isLegacyIframePath(base, pathname)) {
+      return pathname;
+    }
+
+    return pathname;
+  }
+
+  function legacyFrameUrl(path, base) {
+    var frameUrl = new URL(path, base);
+    frameUrl.searchParams.set("oml_embed", "1");
+    return frameUrl.href;
+  }
+
   function setLegacyIframeMode(shell, enabled) {
     shell.classList.toggle("oml-hub-shell--legacy-iframe", enabled);
   }
@@ -287,7 +373,9 @@
     var brandWrap = el("div", "oml-hub-sidebar-brand");
     var brand = el("a", "oml-hub-brand");
     brand.href = OML_LANDING_URL;
-    brand.setAttribute("aria-label", "omusiclab tools — home");
+    brand.target = "_blank";
+    brand.rel = "noopener noreferrer";
+    brand.setAttribute("aria-label", "omusiclab — opens in new tab");
     brand.innerHTML =
       global.OMLLogoMark && global.OMLLogoMark.svg
         ? global.OMLLogoMark.svg
@@ -463,7 +551,7 @@
     var lead = el(
       "p",
       "oml-hub-welcome-lead",
-      "Small utilities in the spirit of omusiclab.com — practice aids, chord charts, and archived legacy generators."
+      "Free tools for everyday playing — keep time, tune up, transpose charts, and open classic generators. Pick one below to get started."
     );
     main.appendChild(title);
     main.appendChild(lead);
@@ -519,20 +607,92 @@
     body.classList.toggle("oml-hub-home", !!isHome);
   }
 
-  function loadToolStyles(doc, base) {
-    var links = doc.querySelectorAll('link[rel="stylesheet"]');
+  function syncBodyClassNames(classNames, isHome) {
+    syncBodyClasses(null, isHome);
+    if (!classNames) return;
     var i;
-    var href;
-    var link;
+    for (i = 0; i < classNames.length; i++) {
+      global.document.body.classList.add(classNames[i]);
+    }
+  }
+
+  function hasToolStylesheet(href) {
+    var links = global.document.querySelectorAll("link[data-oml-tool-style]");
+    var i;
     for (i = 0; i < links.length; i++) {
-      href = links[i].getAttribute("href") || "";
-      if (isSharedAsset(href, SHARED_STYLE_MARKERS)) continue;
+      if (links[i].href === href) return true;
+    }
+    return false;
+  }
+
+  function loadToolStylesFromUrls(urls) {
+    var i;
+    var link;
+    for (i = 0; i < urls.length; i++) {
+      if (hasToolStylesheet(urls[i])) continue;
       link = global.document.createElement("link");
       link.rel = "stylesheet";
-      link.href = new URL(href, base).href;
+      link.href = urls[i];
       link.setAttribute("data-oml-tool-style", "1");
       global.document.head.appendChild(link);
     }
+  }
+
+  function parseToolDocument(doc, pageUrl) {
+    var main = doc.getElementById("body-container");
+    if (!main) throw new Error("missing body-container");
+
+    var bodyClasses = [];
+    if (doc.body) {
+      Array.prototype.forEach.call(doc.body.classList, function (name) {
+        if (name.indexOf("oml-embed") !== 0) bodyClasses.push(name);
+      });
+    }
+
+    var footer = doc.querySelector("footer");
+    var styles = [];
+    var links = doc.querySelectorAll('link[rel="stylesheet"]');
+    var i;
+    var href;
+    for (i = 0; i < links.length; i++) {
+      href = links[i].getAttribute("href") || "";
+      if (isSharedAsset(href, SHARED_STYLE_MARKERS)) continue;
+      styles.push(new URL(href, pageUrl).href);
+    }
+
+    return {
+      mainClass: main.className,
+      mainHtml: main.innerHTML,
+      footerHtml: footer ? footer.innerHTML : "",
+      title: doc.title || "",
+      bodyClasses: bodyClasses,
+      styles: styles,
+      scripts: collectToolScripts(doc, pageUrl),
+    };
+  }
+
+  function applyToolDocument(cached, base, shell) {
+    clearToolAssets();
+    if (shell) setLegacyIframeMode(shell, false);
+    syncBodyClassNames(cached.bodyClasses, false);
+    loadToolStylesFromUrls(cached.styles);
+
+    var target = global.document.getElementById("body-container");
+    target.className = cached.mainClass;
+    target.innerHTML = cached.mainHtml;
+    target.removeAttribute("data-oml-hub-rendered");
+
+    var liveFooter = global.document.querySelector(".oml-hub-main footer");
+    if (liveFooter && cached.footerHtml) {
+      liveFooter.innerHTML = cached.footerHtml;
+    }
+
+    if (cached.title) global.document.title = cached.title;
+
+    return loadScriptsSequential(cached.scripts).then(function () {
+      refreshExternalLinks(target, base);
+      if (liveFooter) refreshExternalLinks(liveFooter, base);
+    });
   }
 
   function loadScriptsSequential(srcs) {
@@ -563,13 +723,26 @@
     return out;
   }
 
+  function refreshExternalLinks(root, base) {
+    if (global.OMLExternalLinks && root) {
+      global.OMLExternalLinks.upgradeExternalLinks(root, base);
+    }
+  }
+
+  function setNavCurrent(el, isCurrent) {
+    if (isCurrent) {
+      el.setAttribute("aria-current", "page");
+    } else {
+      el.removeAttribute("aria-current");
+    }
+  }
+
   function updateActiveNav(activeId, ctx) {
     var links = global.document.querySelectorAll("[data-oml-nav]");
     var i;
     for (i = 0; i < links.length; i++) {
       var id = links[i].getAttribute("data-oml-nav");
-      var active = id === activeId;
-      links[i].toggleAttribute("aria-current", active);
+      setNavCurrent(links[i], id === activeId);
     }
 
     var tabs = global.document.querySelectorAll(".oml-hub-bottom-tab[data-oml-tab]");
@@ -578,7 +751,7 @@
       if (tabId === "more") continue;
       var tabActive = tabId === activeId;
       tabs[i].classList.toggle("is-active", tabActive);
-      tabs[i].toggleAttribute("aria-current", tabActive);
+      setNavCurrent(tabs[i], tabActive);
     }
 
     if (ctx && ctx.titleEl) {
@@ -588,10 +761,38 @@
 
   function createRouter(base, ctx) {
     var loading = false;
-    var currentPath = normalizePath(global.location.pathname);
+    var currentPath = readBootstrapPath(base);
+    var legacyFrame = null;
+    var legacyFramePath = null;
 
     function canonicalPath(pathname) {
       return normalizePath(pathname);
+    }
+
+    function cacheToolPage(path, html, fetchUrl) {
+      try {
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        toolPageCache[path] = parseToolDocument(doc, fetchUrl);
+      } catch (e) {}
+    }
+
+    function prefetchToolPage(path) {
+      if (toolPageCache[path] || prefetchedPaths[path]) return;
+      if (!isModernSpaPath(base, path)) return;
+      var homePath = canonicalPath(new URL("./", base).pathname);
+      if (path === homePath) return;
+
+      prefetchedPaths[path] = true;
+      global
+        .fetch(new URL(path, base).href, { credentials: "same-origin" })
+        .then(function (res) {
+          if (!res.ok) return null;
+          return res.text();
+        })
+        .then(function (html) {
+          if (html) cacheToolPage(path, html, new URL(path, base).href);
+        })
+        .catch(function () {});
     }
 
     function navigate(pathname, options) {
@@ -605,6 +806,7 @@
       }
 
       if (path === currentPath && !options.force) {
+        updateActiveNav(getToolIdForPath(base, path) || "home", ctx);
         setMobileNavOpen(ctx.shell, ctx.menuBtn, ctx.sidebar, false);
         return global.Promise.resolve();
       }
@@ -614,6 +816,7 @@
       ctx.shell.classList.add("oml-hub-shell--loading");
 
       var activeId = getToolIdForPath(base, path) || "home";
+      updateActiveNav(activeId, ctx);
       var task;
       if (path === homePath) {
         task = showHome();
@@ -626,17 +829,17 @@
       return task
         .then(function () {
           currentPath = path;
+          persistRoute(base, path);
 
           if (!options.fromHistory) {
-            var url = new URL(path, base);
+            var displayPath = historyUrlForPath(base, path);
             global.history.pushState(
-              { omlPath: path },
+              { [HISTORY_STATE_KEY]: path },
               "",
-              url.pathname + url.search + url.hash
+              displayPath + global.location.hash
             );
           }
 
-          updateActiveNav(activeId, ctx);
           setMobileNavOpen(ctx.shell, ctx.menuBtn, ctx.sidebar, false);
           global.scrollTo(0, 0);
         })
@@ -658,9 +861,9 @@
 
       var footer = global.document.querySelector(".oml-hub-main footer p");
       if (footer) {
-        footer.innerHTML =
-          'Part of <a href="https://omusiclab-landingpage.vercel.app/">omusiclab</a>';
+        footer.innerHTML = OML_FOOTER_EXTERNAL_HTML;
       }
+      refreshExternalLinks(global.document.querySelector(".oml-hub-main"), base);
       return global.Promise.resolve();
     }
 
@@ -672,42 +875,71 @@
       var main = global.document.getElementById("body-container");
       if (!main) return global.Promise.reject(new Error("missing body-container"));
 
+      var frameUrl = legacyFrameUrl(path, base);
+      var sameFrame = legacyFramePath === path && legacyFrame;
+
       main.removeAttribute("data-oml-hub-rendered");
-      main.className = "oml-hub-legacy-viewport oml-hub-legacy-viewport--loading";
+      main.className = "oml-hub-legacy-viewport";
       main.innerHTML = "";
 
-      var loading = el("div", "oml-hub-legacy-loading");
-      loading.setAttribute("aria-live", "polite");
-      loading.setAttribute("aria-busy", "true");
-      loading.appendChild(el("div", "oml-hub-legacy-spinner"));
-      loading.appendChild(el("p", "oml-hub-legacy-loading-label", "Loading tool…"));
-      main.appendChild(loading);
+      if (!legacyFrame) {
+        legacyFrame = el("iframe", "oml-hub-legacy-frame");
+        legacyFrame.setAttribute(
+          "sandbox",
+          "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
+        );
+      }
 
-      var iframe = el("iframe", "oml-hub-legacy-frame oml-hub-legacy-frame--loading");
-      iframe.title = getToolLabel(activeId);
-      main.appendChild(iframe);
-
+      legacyFrame.title = getToolLabel(activeId);
+      main.appendChild(legacyFrame);
       global.document.title = "omusiclab | " + getToolLabel(activeId);
+
+      if (sameFrame && legacyFrame.contentDocument) {
+        refreshExternalLinks(main, base);
+        if (global.OMLExternalLinks) {
+          global.OMLExternalLinks.initDocument(legacyFrame.contentDocument);
+        }
+        return global.Promise.resolve();
+      }
+
+      main.classList.add("oml-hub-legacy-viewport--loading");
+      legacyFrame.classList.add("oml-hub-legacy-frame--loading");
+
+      var loadingEl = el("div", "oml-hub-legacy-loading");
+      loadingEl.setAttribute("aria-live", "polite");
+      loadingEl.setAttribute("aria-busy", "true");
+      loadingEl.appendChild(el("div", "oml-hub-legacy-spinner"));
+      loadingEl.appendChild(el("p", "oml-hub-legacy-loading-label", "Loading tool…"));
+      main.insertBefore(loadingEl, legacyFrame);
 
       return new global.Promise(function (resolve) {
         var settled = false;
         function finish() {
           if (settled) return;
           settled = true;
+          legacyFramePath = path;
           main.classList.remove("oml-hub-legacy-viewport--loading");
-          iframe.classList.remove("oml-hub-legacy-frame--loading");
-          loading.setAttribute("aria-busy", "false");
-          if (loading.parentNode) loading.parentNode.removeChild(loading);
+          legacyFrame.classList.remove("oml-hub-legacy-frame--loading");
+          loadingEl.setAttribute("aria-busy", "false");
+          if (loadingEl.parentNode) loadingEl.parentNode.removeChild(loadingEl);
+          if (global.OMLExternalLinks && legacyFrame.contentDocument) {
+            global.OMLExternalLinks.initDocument(legacyFrame.contentDocument);
+          }
           resolve();
         }
 
-        iframe.addEventListener("load", finish);
-        iframe.addEventListener("error", finish);
-        iframe.src = new URL(path, base).href;
+        legacyFrame.addEventListener("load", finish, { once: true });
+        legacyFrame.addEventListener("error", finish, { once: true });
+        legacyFrame.src = frameUrl;
       });
     }
 
     function loadToolPage(path) {
+      var cached = toolPageCache[path];
+      if (cached) {
+        return applyToolDocument(cached, base, ctx.shell);
+      }
+
       var fetchUrl = new URL(path, base).href;
       return global
         .fetch(fetchUrl, { credentials: "same-origin" })
@@ -716,37 +948,16 @@
           return res.text();
         })
         .then(function (html) {
-          var doc = new DOMParser().parseFromString(html, "text/html");
-          var main = doc.getElementById("body-container");
-          if (!main) throw new Error("missing body-container");
-
-          clearToolAssets();
-          setLegacyIframeMode(ctx.shell, false);
-          syncBodyClasses(doc, false);
-          loadToolStyles(doc, fetchUrl);
-
-          var target = global.document.getElementById("body-container");
-          target.className = main.className;
-          target.innerHTML = main.innerHTML;
-          target.removeAttribute("data-oml-hub-rendered");
-
-          var fetchedFooter = doc.querySelector("footer");
-          var liveFooter = global.document.querySelector(".oml-hub-main footer");
-          if (fetchedFooter && liveFooter) {
-            liveFooter.innerHTML = fetchedFooter.innerHTML;
-          }
-
-          if (doc.title) global.document.title = doc.title;
-
-          var scripts = collectToolScripts(doc, fetchUrl);
-          return loadScriptsSequential(scripts);
+          cacheToolPage(path, html, fetchUrl);
+          if (!toolPageCache[path]) throw new Error("parse failed");
+          return applyToolDocument(toolPageCache[path], base, ctx.shell);
         });
     }
 
     function onPopState(event) {
+      var homePath = canonicalPath(new URL("./", base).pathname);
       var path =
-        (event.state && event.state[HISTORY_STATE_KEY]) ||
-        global.location.pathname;
+        (event.state && event.state[HISTORY_STATE_KEY]) || homePath;
       navigate(path, { fromHistory: true, force: true });
     }
 
@@ -778,15 +989,55 @@
 
     global.addEventListener("popstate", onPopState);
     ctx.shell.addEventListener("click", onNavClick);
+    ctx.shell.addEventListener("mouseover", function (event) {
+      var link = event.target.closest("[data-oml-nav]");
+      if (!link || link.classList.contains("oml-hub-link--external")) return;
+      var href = link.getAttribute("href");
+      if (!href) return;
+      var path = canonicalPath(new URL(href, base).pathname);
+      prefetchToolPage(path);
+    });
 
-    global.history.replaceState(
-      { omlPath: currentPath },
-      "",
-      global.location.pathname + global.location.search + global.location.hash
-    );
+    function bootstrapInitialRoute() {
+      if (!isHubRootDocument(base)) {
+        global.history.replaceState(
+          { [HISTORY_STATE_KEY]: currentPath },
+          "",
+          global.location.pathname + global.location.search + global.location.hash
+        );
+        return global.Promise.resolve();
+      }
+
+      var homePath = canonicalPath(new URL("./", base).pathname);
+      var targetPath = currentPath;
+      var displayUrl = historyUrlForPath(base, targetPath);
+      var shouldRestore =
+        targetPath !== homePath && isRoutablePath(base, targetPath);
+
+      if (!shouldRestore) {
+        targetPath = homePath;
+        displayUrl = homePath;
+      }
+
+      global.history.replaceState(
+        { [HISTORY_STATE_KEY]: targetPath },
+        "",
+        displayUrl + global.location.hash
+      );
+      currentPath = targetPath;
+
+      if (shouldRestore) {
+        return navigate(targetPath, { fromHistory: true, force: true });
+      }
+
+      return global.Promise.resolve();
+    }
+
+    bootstrapInitialRoute();
 
     return {
       navigate: navigate,
+      prefetchPath: prefetchToolPage,
     };
   }
 
@@ -829,16 +1080,23 @@
   function registerServiceWorker(base) {
     if (!("serviceWorker" in global.navigator)) return;
     var swUrl = new URL("sw.js", base).href;
-    global.addEventListener("load", function () {
+    function register() {
       global.navigator.serviceWorker.register(swUrl).catch(function () {});
-    });
+    }
+    if ("requestIdleCallback" in global) {
+      global.requestIdleCallback(register, { timeout: 3000 });
+    } else {
+      global.setTimeout(register, 1500);
+    }
   }
 
   function initHub() {
     if (isEmbedMode()) return;
 
     var base = getScriptBase();
-    var activeId = getCurrentToolId(base) || "home";
+    var routePath = readBootstrapPath(base);
+    var homePath = normalizePath(new URL("./", base).pathname);
+    var activeId = getToolIdForPath(base, routePath) || "home";
     var built = buildSidebar(base, activeId);
     var mobile = buildMobileHeader(activeId);
     var bottomNav = buildBottomNav(base, activeId);
@@ -865,7 +1123,7 @@
     global.document.body.appendChild(shell);
 
     global.document.body.classList.add("oml-has-hub");
-    if (activeId === "home") {
+    if (activeId === "home" && routePath === homePath) {
       global.document.body.classList.add("oml-hub-home");
       renderHomeContent(base);
     }
@@ -878,6 +1136,31 @@
     };
 
     router = createRouter(base, ctx);
+
+    function scheduleIdlePrefetch() {
+      if (!router || !router.prefetchPath) return;
+      function run() {
+        var links = shell.querySelectorAll("[data-oml-nav]:not(.oml-hub-link--external)");
+        var i;
+        var href;
+        var path;
+        for (i = 0; i < links.length; i++) {
+          href = links[i].getAttribute("href");
+          if (!href) continue;
+          try {
+            path = normalizePath(new URL(href, base).pathname);
+            router.prefetchPath(path);
+          } catch (e) {}
+        }
+      }
+      if ("requestIdleCallback" in global) {
+        global.requestIdleCallback(run, { timeout: 5000 });
+      } else {
+        global.setTimeout(run, 2000);
+      }
+    }
+
+    scheduleIdlePrefetch();
 
     function openDrawer() {
       setMobileNavOpen(shell, mobile.menuBtn, built.sidebar, true);
@@ -919,6 +1202,9 @@
 
     ensurePwaMeta(base);
     registerServiceWorker(base);
+    global.requestAnimationFrame(function () {
+      refreshExternalLinks(shell, base);
+    });
   }
 
   function onReady() {

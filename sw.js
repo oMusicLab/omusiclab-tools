@@ -1,5 +1,5 @@
-/* Minimal service worker for installable PWA shell caching */
-var CACHE_NAME = "oml-tools-shell-v1";
+/* PWA shell cache — stale-while-revalidate for shared assets */
+var CACHE_NAME = "oml-tools-shell-v3";
 var SHELL_URLS = [
   "/",
   "/index.html",
@@ -9,11 +9,13 @@ var SHELL_URLS = [
   "/shared/oml-hub.css",
   "/shared/oml-hub.js",
   "/shared/oml-logo-mark.js",
+  "/shared/oml-external-links.js",
+  "/shared/oml-legacy-frame.js",
 ];
 
 function isShellRequest(url) {
   if (url.pathname === "/" || url.pathname === "/index.html") return true;
-  if (url.pathname.indexOf("/shared/oml-hub") !== -1) return true;
+  if (url.pathname.indexOf("/shared/oml-") !== -1) return true;
   if (url.pathname === "/manifest.webmanifest") return true;
   if (url.pathname === "/sw.js") return true;
   return false;
@@ -65,8 +67,20 @@ self.addEventListener("fetch", function (event) {
   }
 
   event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      return cached || fetch(event.request);
+    caches.open(CACHE_NAME).then(function (cache) {
+      return cache.match(event.request).then(function (cached) {
+        var network = fetch(event.request)
+          .then(function (response) {
+            if (response && response.ok) {
+              cache.put(event.request, response.clone());
+            }
+            return response;
+          })
+          .catch(function () {
+            return cached;
+          });
+        return cached || network;
+      });
     })
   );
 });

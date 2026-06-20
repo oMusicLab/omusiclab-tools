@@ -187,7 +187,7 @@
       return verifyLibraryLoaded()
         ? `Chord-line detection uses chords-transposer (Open-SL).
         <br><br><strong>Open-SL</strong>:
-        <a href="https://github.com/Open-SL/Chords-Transposer" rel="noopener noreferrer">chords-transposer</a> (MIT)
+        <a href="https://github.com/Open-SL/Chords-Transposer" target="_blank" rel="noopener noreferrer">chords-transposer</a> (MIT)
         finds chords on chord-only lines; this site still preserves suffixes when shifting roots.
         `
         : "Library failed to load — using fallback token mode only.";
