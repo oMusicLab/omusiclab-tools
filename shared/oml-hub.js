@@ -447,6 +447,12 @@
 
     sidebar.appendChild(nav);
 
+    var navFooter = el("footer", "oml-hub-sidebar-footer");
+    navFooter.appendChild(
+      el("p", null, "© 2017 – " + new Date().getFullYear() + " omusiclab")
+    );
+    sidebar.appendChild(navFooter);
+
     toggle.addEventListener("click", function () {
       var open = !panel.classList.contains("is-open");
       panel.classList.toggle("is-open", open);
